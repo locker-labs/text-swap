@@ -4,12 +4,10 @@ import { useState } from "react";
 import { createClient, custom } from "viem";
 import { sepolia } from "viem/chains";
 import { erc7715ProviderActions } from "@metamask/delegation-toolkit/experimental";
-import { useSessionAccount } from "@/providers/SessionAccountProvider";
 import { usePermissions } from "@/providers/PermissionProvider";
 import { Loader2, CheckCircle } from "lucide-react";
 
 export default function GrantPermissionsButton() {
-  const { sessionAccount } = useSessionAccount();
   const { savePermission } = usePermissions();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -21,18 +19,20 @@ export default function GrantPermissionsButton() {
    * 2. Sets up permission parameters including:
    *    - Chain ID (Sepolia testnet)
    *    - Expiry time (24 hours from current time)
-   *    - Signer details (delegate smart account)
+   *    - Signer details (delegate address from env var)
    *    - Native token stream permission configuration
    * 3. Grants the permissions through the MetaMask snap
    * 4. Stores the granted permissions using the PermissionProvider
    * 5. Updates the application step
    *
-   * @throws {Error} If delegate smart account is not found
+   * @throws {Error} If delegate address is not configured
    * @async
    */
   const handleGrantPermissions = async () => {
-    if (!sessionAccount) {
-      throw new Error("Session account not found");
+    const delegateAddress = process.env.NEXT_PUBLIC_LOCKER_DELEGATE_ADDRESS;
+
+    if (!delegateAddress) {
+      throw new Error("Delegate address not configured in environment variables");
     }
 
     setIsLoading(true);
@@ -53,7 +53,7 @@ export default function GrantPermissionsButton() {
           signer: {
             type: "account",
             data: {
-              address: sessionAccount.address,
+              address: delegateAddress as `0x${string}`,
             },
           },
           permission: {
@@ -63,7 +63,7 @@ export default function GrantPermissionsButton() {
               amountPerSecond: 1n, // 1 WEI per second
               startTime: currentTime,
               maxAmount: 10n, // 10 WEI
-              justification: "Payment for a subscription service",
+              justification: "Buy tokens on your behalf when you send verified messages from Twitter.",
             },
           },
         },
