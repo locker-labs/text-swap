@@ -7,7 +7,7 @@ const TWITTER_USER_URL = 'https://api.x.com/2/users/me';
 
 // Twitter OAuth client - ideally these would come from env vars
 const TWITTER_CLIENT_ID = process.env.NEXT_PUBLIC_TWITTER_CLIENT_ID || '';
-const TWITTER_REDIRECT_URI = process.env.NEXT_PUBLIC_TWITTER_REDIRECT_URI || '';
+const TWITTER_REDIRECT_URI = `${process.env.NEXT_PUBLIC_BASE_URL}/api/twitter/callback`;
 
 // PKCE and state storage keys
 const PKCE_CODE_VERIFIER_KEY = 'twitter_pkce_code_verifier';
