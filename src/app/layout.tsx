@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SessionAccountProvider } from "@/providers/SessionAccountProvider";
 import { PermissionProvider } from "@/providers/PermissionProvider";
+import { TwitterProvider } from "@/providers/TwitterProvider";
+import "../services/publicClient";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,13 +28,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
+      <head>
+        <title>Locker - Text Swap</title>
+        <meta name="description" content="Locker Text Swap" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-full font-sans antialiased flex flex-col`}
       >
         <div className="flex-1">
           <main>
             <PermissionProvider>
-              <SessionAccountProvider>{children}</SessionAccountProvider>
+              <SessionAccountProvider>
+                <TwitterProvider>
+                  {children}
+                </TwitterProvider>
+              </SessionAccountProvider>
             </PermissionProvider>
           </main>
         </div>
