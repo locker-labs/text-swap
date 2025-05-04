@@ -31,6 +31,7 @@ export default function RootLayout({
       <head>
         <title>Locker - Text Swap</title>
         <meta name="description" content="Locker Text Swap" />
+        <meta name="apple-mobile-web-app-title" content="Text Swap" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-full font-sans antialiased flex flex-col`}
