@@ -9,6 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aa-sdk/core": "^4.31.2",
+    "@account-kit/infra": "^4.31.2",
+    "@account-kit/smart-contracts": "^4.31.2",
     "@metamask/delegation-toolkit": "^0.10.2",
     "@tailwindcss/postcss": "^4.1.1",
     "lucide-react": "^0.487.0",
@@ -29,5 +32,6 @@
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.1",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39"
 }
