@@ -1,24 +1,23 @@
 import { type Address, toHex, createWalletClient, http, parseUnits } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { LocalAccountSigner } from "@aa-sdk/core";
-import { alchemy, sepolia as chain } from "@account-kit/infra";
-import { createModularAccountAlchemyClient } from "@account-kit/smart-contracts";
+import { sepolia as chain } from "@account-kit/infra";
 import { xLockPluginActions, XLockPlugin, XLockPluginAbi } from "@/plugins/gens/xLock/x-lock/plugin";
+import { erc7715ProviderActions } from "@metamask/delegation-toolkit/experimental";
+import { sessionAccountMAClient, sessionAccountAddress, sesssionOwnerWalletClient } from "./sessionAccount";
 
+
+/**
+ * Secrets
+ */
 const randomPrivateKey = process.env.NEXT_PUBLIC_RANDOM_PRIVATE_KEY as Address;
-
+const privateKey = process.env.NEXT_PUBLIC_LOCKER_DELEGATE_OWNER_PRIVATE_KEY as Address;
+const apiKey = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY as string;
 if (!randomPrivateKey) {
   throw new Error("NEXT_PUBLIC_RANDOM_PRIVATE_KEY is not set");
 }
-
-const privateKey = process.env.NEXT_PUBLIC_LOCKER_DELEGATE_OWNER_PRIVATE_KEY as Address;
-
 if (!privateKey) {
   throw new Error("NEXT_PUBLIC_LOCKER_DELEGATE_OWNER_PRIVATE_KEY is not set");
 }
-
-const apiKey = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY as string;
-
 if (!apiKey) {
   throw new Error("NEXT_PUBLIC_ALCHEMY_API_KEY is not set");
 }
@@ -27,40 +26,40 @@ if (!apiKey) {
 /**
  * Constants for the xLock plugin
  */
+const tokenAddress = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238'; // USDC
 const pluginAddress = XLockPlugin.meta.addresses[chain.id];
-console.log("Plugin:", pluginAddress);
 const recipient = "0x0E0Ea5F87509486e7023C39A2cF5A959b39A7971";
+console.log('tokenAddress (USDC):', tokenAddress);
+console.log("Plugin:", pluginAddress);
+console.log("session Account (MAv1):", sessionAccountAddress);
+console.log("recipient:", recipient);
+console.log("\n");
 
-// 1. setup local account using locker delegate owner private key
-const signer = LocalAccountSigner.privateKeyToAccountSigner(privateKey);
 
-// 2. create a smart account using locker delegate owner as owner
-const maClient = await createModularAccountAlchemyClient({
-  salt: BigInt(0),
-  signer,
-  chain,
-  transport: alchemy({ apiKey }),
-});
-const maAddress = maClient.getAddress() as Address;
-console.log("MA(v1):", maAddress);
-
-// 3. install xLock plugin on the smart account
+/**
+ * 1. Install xLock plugin on the smart account
+ */
 console.log("Extending client with xLock plugin");
-const extendedClient = maClient.extend(xLockPluginActions);
+const sessionAccountExtendedClient = sessionAccountMAClient.extend(xLockPluginActions);
 
-// @ts-ignore
-// SKIP IF ALREADY INSTALLED
 try {
-  const result = await extendedClient.installXLockPlugin({
+  console.log("Installing xLock plugin on session account...");
+  const result = await sessionAccountExtendedClient.installXLockPlugin({
     args: []
   })
   console.log("Plugin Installation Result:", result);
 } catch (e) {
+  console.log("Plugin already installed");
+  // SKIP IF ALREADY INSTALLED
+  // console.error("Error installing plugin:", e);
+  // process.exit(1);
   // console.log("Plugin already installed");
 }
 
 
-// 4. set xLockerWallet as smart account address
+/**
+ * 2. set xLockerWallet as smart account address (ideally one time setup)
+ */
 const setXLockerWalletAbi = [
   {
     "inputs": [
@@ -77,35 +76,48 @@ const setXLockerWalletAbi = [
   }
 ];
 
-const walletClient = createWalletClient({
-  account: privateKeyToAccount(privateKey),
-  chain,
-  transport: http(),
-});
-
-console.log("Calling setXLockerWallet(maAddress) from EOA");
-const hash = await walletClient.writeContract({
+console.log("Calling setXLockerWallet(sessionAccount) from sesssionOwner");
+const hash = await sesssionOwnerWalletClient.writeContract({
   address: pluginAddress,
   abi: setXLockerWalletAbi,
   functionName: 'setXLockerWallet',
-  args: [maAddress],
+  args: [sessionAccountAddress],
 });
 console.log("setXLockerWallet Hash:", hash);
 
-// 5. creata a userOp using smart account as signer
+// const target = recipient;
+// const value = parseUnits("0.0002", 18); // 0.0002 ETH
+// const calldata = '0x';
+
+/**
+ * 3. call redeemAndBuyToken function from sessionAccount with permissionContext, and other params.
+ */
+console.log("Calling redeemAndBuyToken from sessionAccount");
+// old - const permissionContexts = [ "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000020000000000000000000000000324d1f3ce0d3d48153b037775a5b5c34039bd12600000000000000000000000029dcabcfed2f3abdd8d097521032df9f9936dc4fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003c00000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000001800000000000000000000000000000000000000000000000000000000000000220000000000000000000000000d10b97905a320b13a0608f7e9cc506b56747df1900000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000038d7ea4c6800000000000000000000000000000000000000000000000000000071afd498d0000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000681bf400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000099f2e9bf15ce5ec84685604836f71ab835dbbded00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001046bb45c8d673d4ea75321280db34899413c069000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000068252e80000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000414d81347ee4aaf040db4e7de793190c577f4bd3cc9fb19379b96434a54b1828f418ecc2a7d7afe42aa39029a9ecd052d015fb98bad5334ead79210ee60c2192f01b00000000000000000000000000000000000000000000000000000000000000" as Address ]
+const permissionContexts = [ "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000020000000000000000000000000255f9aced76cd8e2c332e09e38d4a60d20b216f900000000000000000000000029dcabcfed2f3abdd8d097521032df9f9936dc4fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003c00000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000001800000000000000000000000000000000000000000000000000000000000000220000000000000000000000000d10b97905a320b13a0608f7e9cc506b56747df1900000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000038d7ea4c6800000000000000000000000000000000000000000000000000000071afd498d0000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000681bf400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000099f2e9bf15ce5ec84685604836f71ab835dbbded00000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001046bb45c8d673d4ea75321280db34899413c069000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000a000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000068252e8000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000041fa617745ca6af669ee01358358c2c518fbd0439f8a132bc6d2cb7572fffa9e2031a76caadd5d16677b75be19f81075714e99889f5ca644d6d6c4407d76a1d0fa1b00000000000000000000000000000000000000000000000000000000000000" as Address ]
+const modes = [ "0x0000000000000000000000000000000000000000000000000000000000000000" as Address ];
+const executionCallDatas = [ "0x0faacdc46cce444bfdd63cde4ee3e5d987e59c9700000000000000000000000000000000000000000000000000038d7ea4c68000" as Address ];
 const xHandleHex = toHex("adobe40512");
-console.log("Calling executeXTrnx");
 
-const randomWalletClient = createWalletClient({
-  account: privateKeyToAccount(randomPrivateKey),
-  chain,
-  transport: http(),
-});
+const result = await sessionAccountExtendedClient.redeemAndBuyToken({
+  args: [0, xHandleHex, tokenAddress, tokenAddress, permissionContexts, modes, executionCallDatas],
+})
+console.log('result', result);
 
-const executeXTrnxHash = await randomWalletClient.writeContract({
-  address: pluginAddress,
-  abi: XLockPluginAbi,
-  functionName: 'executeXTrnx',
-  args: [0, xHandleHex, recipient, parseUnits("0.0002", 18), '0x'],
-});
-console.log("executeXTrnx Hash:", executeXTrnxHash);
+/**
+ * TODO: send redeemAndBuyToken function call from random wallet client
+ */
+// const randomWalletClient = createWalletClient({
+//   account: privateKeyToAccount(randomPrivateKey),
+//   chain,
+//   transport: http(),
+// }).extend(erc7715ProviderActions());
+
+// const redeemAndBuyTokenHash = await randomWalletClient.writeContract({
+//   address: pluginAddress,
+//   abi: XLockPluginAbi,
+//   functionName: 'redeemAndBuyToken',
+//   args: [0, xHandleHex, tokenAddress, tokenAddress, permissionContexts, modes, executionCallDatas],
+// });
+
+// console.log("redeemAndBuyTokenHash Hash:", redeemAndBuyTokenHash);

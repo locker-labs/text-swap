@@ -42,11 +42,11 @@ type ExecutionActions<
   TEntryPointVersion extends
     GetEntryPointFromAccount<TAccount> = GetEntryPointFromAccount<TAccount>,
 > = {
-  executeXTrnx: (
+  redeemAndBuyToken: (
     args: Pick<
       EncodeFunctionDataParameters<
         typeof XLockPluginExecutionFunctionAbi,
-        "executeXTrnx"
+        "redeemAndBuyToken"
       >,
       "args"
     > &
@@ -60,6 +60,19 @@ type ExecutionActions<
       EncodeFunctionDataParameters<
         typeof XLockPluginExecutionFunctionAbi,
         "setXAddress"
+      >,
+      "args"
+    > &
+      UserOperationOverridesParameter<TEntryPointVersion> &
+      GetAccountParameter<TAccount> &
+      GetContextParameter<TContext>,
+  ) => Promise<SendUserOperationResult<TEntryPointVersion>>;
+
+  setXLockerWallet: (
+    args: Pick<
+      EncodeFunctionDataParameters<
+        typeof XLockPluginExecutionFunctionAbi,
+        "setXLockerWallet"
       >,
       "args"
     > &
@@ -96,11 +109,11 @@ type ManagementActions<
 };
 
 type ReadAndEncodeActions = {
-  encodeExecuteXTrnx: (
+  encodeRedeemAndBuyToken: (
     args: Pick<
       EncodeFunctionDataParameters<
         typeof XLockPluginExecutionFunctionAbi,
-        "executeXTrnx"
+        "redeemAndBuyToken"
       >,
       "args"
     >,
@@ -111,6 +124,16 @@ type ReadAndEncodeActions = {
       EncodeFunctionDataParameters<
         typeof XLockPluginExecutionFunctionAbi,
         "setXAddress"
+      >,
+      "args"
+    >,
+  ) => Hex;
+
+  encodeSetXLockerWallet: (
+    args: Pick<
+      EncodeFunctionDataParameters<
+        typeof XLockPluginExecutionFunctionAbi,
+        "setXLockerWallet"
       >,
       "args"
     >,
@@ -129,7 +152,7 @@ export type XLockPluginActions<
   ReadAndEncodeActions;
 
 const addresses = {
-  11155111: "0xBc9f3762A996667A6E0d8dfA70092b7EEC1a6557" as Address,
+  11155111: "0x04a8250ABfad42c48401c92773dc86adc93a0B59" as Address,
 } as Record<number, Address>;
 
 export const XLockPlugin: Plugin<typeof XLockPluginAbi> = {
@@ -164,21 +187,21 @@ export const xLockPluginActions: <
 >(
   client: Client<TTransport, TChain, TAccount>,
 ) => XLockPluginActions<TAccount, TContext> = (client) => ({
-  executeXTrnx({ args, overrides, context, account = client.account }) {
+  redeemAndBuyToken({ args, overrides, context, account = client.account }) {
     if (!account) {
       throw new AccountNotFoundError();
     }
     if (!isSmartAccountClient(client)) {
       throw new IncompatibleClientError(
         "SmartAccountClient",
-        "executeXTrnx",
+        "redeemAndBuyToken",
         client,
       );
     }
 
     const uo = encodeFunctionData({
       abi: XLockPluginExecutionFunctionAbi,
-      functionName: "executeXTrnx",
+      functionName: "redeemAndBuyToken",
       args,
     });
 
@@ -199,6 +222,26 @@ export const xLockPluginActions: <
     const uo = encodeFunctionData({
       abi: XLockPluginExecutionFunctionAbi,
       functionName: "setXAddress",
+      args,
+    });
+
+    return client.sendUserOperation({ uo, overrides, account, context });
+  },
+  setXLockerWallet({ args, overrides, context, account = client.account }) {
+    if (!account) {
+      throw new AccountNotFoundError();
+    }
+    if (!isSmartAccountClient(client)) {
+      throw new IncompatibleClientError(
+        "SmartAccountClient",
+        "setXLockerWallet",
+        client,
+      );
+    }
+
+    const uo = encodeFunctionData({
+      abi: XLockPluginExecutionFunctionAbi,
+      functionName: "setXLockerWallet",
       args,
     });
 
@@ -267,10 +310,10 @@ export const xLockPluginActions: <
       context,
     });
   },
-  encodeExecuteXTrnx({ args }) {
+  encodeRedeemAndBuyToken({ args }) {
     return encodeFunctionData({
       abi: XLockPluginExecutionFunctionAbi,
-      functionName: "executeXTrnx",
+      functionName: "redeemAndBuyToken",
       args,
     });
   },
@@ -281,18 +324,27 @@ export const xLockPluginActions: <
       args,
     });
   },
+  encodeSetXLockerWallet({ args }) {
+    return encodeFunctionData({
+      abi: XLockPluginExecutionFunctionAbi,
+      functionName: "setXLockerWallet",
+      args,
+    });
+  },
 });
 
 export const XLockPluginExecutionFunctionAbi = [
   {
     type: "function",
-    name: "executeXTrnx",
+    name: "redeemAndBuyToken",
     inputs: [
       { name: "", type: "uint8", internalType: "uint8" },
       { name: "xHandle", type: "bytes", internalType: "bytes" },
-      { name: "target", type: "address", internalType: "address" },
-      { name: "value", type: "uint256", internalType: "uint256" },
-      { name: "data", type: "bytes", internalType: "bytes" },
+      { name: "tokenAddress", type: "address", internalType: "address" },
+      { name: "tokenAmount", type: "address", internalType: "address" },
+      { name: "permissionContexts", type: "bytes[]", internalType: "bytes[]" },
+      { name: "modes", type: "bytes32[]", internalType: "ModeCode[]" },
+      { name: "executionCallDatas", type: "bytes[]", internalType: "bytes[]" },
     ],
     outputs: [],
     stateMutability: "nonpayable",
@@ -300,9 +352,15 @@ export const XLockPluginExecutionFunctionAbi = [
   {
     type: "function",
     name: "setXAddress",
+    inputs: [{ name: "xHandle", type: "bytes", internalType: "bytes" }],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "setXLockerWallet",
     inputs: [
-      { name: "xHandle", type: "bytes", internalType: "bytes" },
-      { name: "signature", type: "bytes", internalType: "bytes" },
+      { name: "_xLockerWallet", type: "address", internalType: "address" },
     ],
     outputs: [],
     stateMutability: "nonpayable",
@@ -314,6 +372,7 @@ export const XLockPluginAbi = [
     type: "constructor",
     inputs: [
       { name: "_reclaimAddress", type: "address", internalType: "address" },
+      { name: "_delegationManager", type: "address", internalType: "address" },
     ],
     stateMutability: "nonpayable",
   },
@@ -340,16 +399,12 @@ export const XLockPluginAbi = [
   },
   {
     type: "function",
-    name: "executeXTrnx",
-    inputs: [
-      { name: "", type: "uint8", internalType: "uint8" },
-      { name: "xHandle", type: "bytes", internalType: "bytes" },
-      { name: "target", type: "address", internalType: "address" },
-      { name: "value", type: "uint256", internalType: "uint256" },
-      { name: "data", type: "bytes", internalType: "bytes" },
+    name: "delegationManager",
+    inputs: [],
+    outputs: [
+      { name: "", type: "address", internalType: "contract DelegationManager" },
     ],
-    outputs: [],
-    stateMutability: "nonpayable",
+    stateMutability: "view",
   },
   {
     type: "function",
@@ -702,6 +757,21 @@ export const XLockPluginAbi = [
   },
   {
     type: "function",
+    name: "redeemAndBuyToken",
+    inputs: [
+      { name: "", type: "uint8", internalType: "uint8" },
+      { name: "xHandle", type: "bytes", internalType: "bytes" },
+      { name: "tokenAddress", type: "address", internalType: "address" },
+      { name: "tokenAmount", type: "address", internalType: "address" },
+      { name: "permissionContexts", type: "bytes[]", internalType: "bytes[]" },
+      { name: "modes", type: "bytes32[]", internalType: "ModeCode[]" },
+      { name: "executionCallDatas", type: "bytes[]", internalType: "bytes[]" },
+    ],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     name: "runtimeValidationFunction",
     inputs: [
       { name: "functionId", type: "uint8", internalType: "uint8" },
@@ -715,9 +785,15 @@ export const XLockPluginAbi = [
   {
     type: "function",
     name: "setXAddress",
+    inputs: [{ name: "xHandle", type: "bytes", internalType: "bytes" }],
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    name: "setXLockerWallet",
     inputs: [
-      { name: "xHandle", type: "bytes", internalType: "bytes" },
-      { name: "signature", type: "bytes", internalType: "bytes" },
+      { name: "_xLockerWallet", type: "address", internalType: "address" },
     ],
     outputs: [],
     stateMutability: "nonpayable",
@@ -773,6 +849,13 @@ export const XLockPluginAbi = [
     type: "function",
     name: "xAddresses",
     inputs: [{ name: "", type: "bytes", internalType: "bytes" }],
+    outputs: [{ name: "", type: "address", internalType: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    name: "xLockerWallet",
+    inputs: [],
     outputs: [{ name: "", type: "address", internalType: "address" }],
     stateMutability: "view",
   },
