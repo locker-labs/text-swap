@@ -1,14 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { createClient, custom } from "viem";
+import { createClient, custom, parseEther } from "viem";
 import { sepolia } from "viem/chains";
 import { erc7715ProviderActions } from "@metamask/delegation-toolkit/experimental";
 import { usePermissions } from "@/providers/PermissionProvider";
 import { Loader2, CheckCircle } from "lucide-react";
+import { useSessionAccount } from "@/providers/SessionAccountProvider";
 
 export default function GrantPermissionsButton() {
   const { savePermission } = usePermissions();
+  const { sessionAccount, createSessionAccount } = useSessionAccount();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   /**
@@ -29,12 +31,9 @@ export default function GrantPermissionsButton() {
    * @async
    */
   const handleGrantPermissions = async () => {
-    const delegateAddress = process.env.NEXT_PUBLIC_LOCKER_DELEGATE_ADDRESS;
-
-    if (!delegateAddress) {
-      throw new Error("Delegate address not configured in environment variables");
+    if (!sessionAccount) {
+      createSessionAccount();
     }
-
     setIsLoading(true);
 
     try {
@@ -53,17 +52,18 @@ export default function GrantPermissionsButton() {
           signer: {
             type: "account",
             data: {
-              address: delegateAddress as `0x${string}`,
+              address: sessionAccount?.address as `0x${string}`,
             },
           },
           permission: {
             type: "native-token-stream",
             data: {
-              initialAmount: 1n, // 1 WEI
-              amountPerSecond: 1n, // 1 WEI per second
+              initialAmount: 100n, // 1 WEI
+              amountPerSecond: 100n, // 100 WEI per second
               startTime: currentTime,
-              maxAmount: 10n, // 10 WEI
-              justification: "Buy tokens on your behalf when you send verified messages from Twitter.",
+              maxAmount: parseEther("0.001"), // 0.001 ETH
+              justification:
+                "Buy tokens on your behalf when you send verified messages from Twitter.",
             },
           },
         },
