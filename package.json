@@ -12,6 +12,7 @@
     "@metamask/delegation-toolkit": "^0.10.2",
     "@tailwindcss/postcss": "^4.1.1",
     "lucide-react": "^0.487.0",
+    "moment": "^2.30.1",
     "next": "15.2.2",
     "permissionless": "^0.2.36",
     "react": "^19.0.0",
