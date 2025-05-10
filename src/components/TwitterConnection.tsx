@@ -4,9 +4,11 @@ import { useState, useEffect } from "react";
 import { CheckCircle, Loader2, Twitter } from "lucide-react";
 import { initiateTwitterOAuth, getCurrentTwitterUser, TwitterUser } from "@/services/twitterOAuth";
 import { useSearchParams } from "next/navigation";
+import FetchTweetData from "@/components/FetchTweetData";
 
 export default function TwitterConnection() {
     const [twitterUser, setTwitterUser] = useState<TwitterUser | null>(null);
+    const [startPolling, setStartPolling] = useState<boolean>(false);
     const [isConnecting, setIsConnecting] = useState<boolean>(false);
     const [tweetText, setTweetText] = useState<string>("");
     const searchParams = useSearchParams();
@@ -77,6 +79,7 @@ export default function TwitterConnection() {
                     </div>
 
                     <a
+                        onClick={() => { setStartPolling(true); }}
                         href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -86,6 +89,7 @@ export default function TwitterConnection() {
                         <Twitter className="h-5 w-5" />
                     </a>
                 </div>
+                {startPolling && <FetchTweetData />}
             </div>
         );
     }
