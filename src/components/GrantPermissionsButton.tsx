@@ -77,9 +77,8 @@ export default function GrantPermissionsButton() {
   };
 
   return (
-    <div className="space-y-6">
       <button
-        className="w-full bg-blue-600 hover:bg-blue-700 cursor-pointer text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full cursor-pointer mt-[18px] mb-[25px] bg-[#4F46E5] hover:bg-blue-700 cursor-pointer text-white font-bold font-[Roboto] p-[14px] text-[16px] rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={handleGrantPermissions}
         disabled={isLoading}
       >
@@ -92,6 +91,5 @@ export default function GrantPermissionsButton() {
           <CheckCircle className="h-5 w-5" />
         )}
       </button>
-    </div>
   );
 }

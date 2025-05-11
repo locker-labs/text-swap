@@ -4,10 +4,13 @@ import ConnectTwitter from "./steps/ConnectTwitter";
 import GrantPermission from "./steps/GrantPermission";
 import SendTweet from "./steps/SendTweet";
 import { useState, useEffect } from "react";
+
 import { TwitterUser } from "@/services/twitterOAuth";
+import { usePermissions } from "@/providers/PermissionProvider";
 
 export default function ActiveStep() {
     const [twitterUser, setTwitterUser] = useState<TwitterUser | null>(null);
+    const { permission, removePermission } = usePermissions();
     const { activeStep, setActiveStep } = useSteps();
 
     /**
@@ -16,13 +19,18 @@ export default function ActiveStep() {
      */
 
     useEffect(() => {
-        if (!twitterUser) {
-            if (activeStep === 2) {
-                setActiveStep(3);
-            }
+        if (permission) {
+            setActiveStep(4);
         } else {
-            if (activeStep === 3) {
-                setActiveStep(2);
+            // @dev for testing, replace twitterUser with !twitterUser in next line
+            if (twitterUser) {
+                if (activeStep === 2) {
+                    setActiveStep(3);
+                }
+            } else {
+                if (activeStep === 3) {
+                    setActiveStep(2);
+                }
             }
         }
     }, [activeStep, twitterUser])

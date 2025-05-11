@@ -45,10 +45,19 @@ export default function SendTweet({ twitterUser }: { twitterUser: TwitterUser | 
           </div>
         </div>
 
-        <button
-          className="cursor-pointer mt-[32px] mb-[25px] w-full bg-[#4F46E5] text-[#FFFFFF] font-bold p-[14px] rounded-lg font-[Roboto] text-[16px] disabled:opacity-50 disabled:cursor-not-allowed"
+        <a
+            onClick={() => {
+              // TODO: when this button is clicked, start polling for tweet
+              // setStartPolling(true);
+            }}
+            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+              tweetText
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="cursor-pointer mt-[32px] mb-[25px] w-full bg-[#4F46E5] text-[#FFFFFF] font-bold p-[14px] rounded-lg font-[Roboto] text-[16px] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Connect Twitter
-        </button>
+            <span>Open Twitter & Send Tweet</span>
+          </a>
     </div>)
 }

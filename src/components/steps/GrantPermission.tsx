@@ -27,12 +27,6 @@ export default function GrantPermission() {
           By granting permission, you confirm that you understand the dapp will only use your tokens after you post a tweet matching the required format
         </p>
 
-        <button
-          className="cursor-pointer mt-[18px] mb-[25px] w-full bg-[#4F46E5] text-[#FFFFFF] font-bold p-[14px] rounded-lg font-[Roboto] text-[16px] disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Grant Permission
-        </button>
-        {/* TODO: update grant permissions UI similar to below button */}
         <GrantPermissionsButton />
     </div>
     )
