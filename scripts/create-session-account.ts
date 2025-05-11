@@ -1,19 +1,17 @@
 import pkg from "@metamask/delegation-toolkit";
-const { getDeleGatorEnvironment, toMetaMaskSmartAccount, Implementation } = pkg;
-import { http, createPublicClient, encodeFunctionData } from "viem";
+const { getDeleGatorEnvironment, toMetaMaskSmartAccount, Implementation, overrideDeployedEnvironment } = pkg;
+import { http, createPublicClient, encodeFunctionData, stringToHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { createBundlerClient } from "viem/account-abstraction";
 import { sepolia as chain } from "viem/chains";
 import { createPimlicoClient } from "permissionless/clients/pimlico";
 
 import dotenv from "dotenv";
-import { overrideDeployedEnvironment } from "@metamask/delegation-toolkit";
-import { DeleGatorEnvironment } from "@metamask/delegation-toolkit";
 dotenv.config();
 
 // Resolves the DeleGatorEnvironment for Linea Sepolia
 const sepoliaChainId = 11155111
-const hybridDeleGatorImpl = '0x18948C8caD3092f24421f7563143377f8c2124bA'
+const hybridDeleGatorImpl = '0x79EbfdDD65796a0ac72707C62724010b30047C11'
 const deploySalt = "0x";
 const privateKey = process.env.PRIVATE_KEY;
 
@@ -21,28 +19,21 @@ if (!privateKey) {
     throw new Error("PRIVATE_KEY environment variable is required");
 }
 
-console.log("privateKey: ", privateKey);
 
 const environment = getDeleGatorEnvironment(sepoliaChainId);
-console.log("Environment: ", environment);
+// console.log("Environment: ", environment);
 
-const customEnv = { ...environment, implementations: { ...environment.implementations, HybridDeleGatorImpl: hybridDeleGatorImpl }, }
-console.log("customEnv: ", customEnv);
+const customEnv: any = { ...environment, implementations: { ...environment.implementations, HybridDeleGatorImpl: hybridDeleGatorImpl }, }
+// console.log("customEnv: ", customEnv);
 
 export const publicClient = createPublicClient({
     transport: http(),
     chain,
 });
 
-const delegatorEnvironment: DeleGatorEnvironment = overrideDeployedEnvironment(
-    sepoliaChainId,
-    "1.3.0",
-    environment,
-);
-
 export const owner = privateKeyToAccount(privateKey as `0x${string}`);
 
-const smartAccount = await toMetaMaskSmartAccount({
+const smartAccountOg = await toMetaMaskSmartAccount({
     client: publicClient,
     implementation: Implementation.Hybrid,
     deployParams: [owner.address, [], [], []],
@@ -50,46 +41,74 @@ const smartAccount = await toMetaMaskSmartAccount({
     signatory: { account: owner },
 });
 
-console.log("Smart Account:", smartAccount.address);
+console.log("smartAccountOg:", smartAccountOg.address);
 
-// const rpcUrl = `https://public.pimlico.io/v2/${sepoliaChainId}/rpc?apikey=${process.env.PIMLICO_API_KEY}`;
-// export const bundlerClient = createBundlerClient({
-//     publicClient,
-//     transport: http(rpcUrl)
-// });
+// Now override the environment to use the custom implementation
+overrideDeployedEnvironment(
+    sepoliaChainId,
+    "1.3.0",
+    customEnv,
+);
 
-// const pimlicoClient = createPimlicoClient({
-//     transport: http(rpcUrl),
-// });
+const smartAccountCustom = await toMetaMaskSmartAccount({
+    client: publicClient,
+    implementation: Implementation.Hybrid,
+    deployParams: [owner.address, [], [], []],
+    deploySalt,
+    signatory: { account: owner },
+});
 
-// const { fast: fee } = await pimlicoClient.getUserOperationGasPrice();
+console.log("smartAccountCustom:", smartAccountCustom.address);
 
-// // Encode the function call to setHandleDelegatorAddress using viem's encodeFunctionData
-// const setHandleDelegatorAddressData = encodeFunctionData({
-//     abi: [{
-//         name: 'setHandleDelegatorAddress',
-//         type: 'function',
-//         stateMutability: 'nonpayable',
-//         inputs: [
-//             { name: 'handle', type: 'string' },
-//             { name: 'delegatorAddress', type: 'address' }
-//         ],
-//         outputs: []
-//     }],
-//     functionName: 'setHandleDelegatorAddress',
-//     args: ['locker_money', '0x2E6c29b8E392bcF37aEc500B619EdCacF41Ff0Bf']
-// });
+const rpcUrl = `https://public.pimlico.io/v2/${sepoliaChainId}/rpc?apikey=${process.env.PIMLICO_API_KEY}`;
+export const bundlerClient = createBundlerClient({
+    transport: http(rpcUrl)
+});
 
-// const userOperationHash = await bundlerClient.sendUserOperation({
-//     account: smartAccount,
-//     calls: [
-//         {
-//             to: smartAccount.address,
-//             data: setHandleDelegatorAddressData,
-//             value: 0n
-//         }
-//     ],
-//     ...fee
-// });
+const pimlicoClient = createPimlicoClient({
+    transport: http(rpcUrl),
+});
 
-// console.log("User Operation Hash:", userOperationHash);
+
+// Encode handle string to bytes (hex)
+const handleBytes = stringToHex('locker_money');
+console.log("handleBytes:", handleBytes);
+
+const setHandleDelegatorAddressData = encodeFunctionData({
+    abi: [{
+        name: 'setHandleDelegatorAddress',
+        type: 'function',
+        stateMutability: 'nonpayable',
+        inputs: [
+            { name: 'handle', type: 'bytes' },
+            { name: 'delegatorAddress', type: 'address' }
+        ],
+        outputs: []
+    }],
+    functionName: 'setHandleDelegatorAddress',
+    args: [handleBytes, '0x2E6c29b8E392bcF37aEc500B619EdCacF41Ff0Bf']
+});
+
+const data = setHandleDelegatorAddressData;
+console.log("data:", data);
+
+const nonce = await smartAccountCustom.getNonce();
+
+const { fast: fee } = await pimlicoClient.getUserOperationGasPrice();
+console.log("fee:", fee);
+
+const userOperationHash = await bundlerClient.sendUserOperation({
+    account: smartAccountCustom,
+    verificationGasLimit: 500_000n,
+    nonce,
+    calls: [
+        {
+            to: smartAccountCustom.address,
+            data,
+            value: 0n
+        }
+    ],
+    ...fee
+});
+
+console.log("User Operation Hash:", userOperationHash);

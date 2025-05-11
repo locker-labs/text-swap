@@ -12,10 +12,10 @@ import { usePermissions } from "./PermissionProvider";
 
 export const SessionAccountContext = createContext({
   sessionAccount: null as MetaMaskSmartAccount<Implementation> | null,
-  createSessionAccount: async () => {},
+  createSessionAccount: async () => { },
   isLoading: false,
   error: null as string | null,
-  clearSessionAccount: () => {},
+  clearSessionAccount: () => { },
 });
 
 const PRIVATE_KEY_STORAGE_KEY =
