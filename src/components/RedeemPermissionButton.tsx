@@ -9,19 +9,16 @@ import { useSessionAccount } from "@/providers/SessionAccountProvider";
 import { usePermissions } from "@/providers/PermissionProvider";
 import { Loader2, CheckCircle, ExternalLink } from "lucide-react";
 import { config } from "@/config";
+import { redeemTransaction } from "@/utils/permissionHelpers";
 
 export default function RedeemPermissionButton() {
   const { permission } = usePermissions();
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState<Hex | null>(null);
 
-  const publicClient = createPublicClient({
-    chain: sepolia,
-    transport: http(),
-  });
   const { createSessionAccount, sessionAccount } = useSessionAccount();
   if (!sessionAccount) {
-    throw new Error("Session account is not available");
+    createSessionAccount();
   }
   /**
    * Handles the redemption of delegation permissions.
@@ -29,12 +26,12 @@ export default function RedeemPermissionButton() {
    * and updates the transaction hash state.
    * @returns {Promise<void>}
    */
+
   const handleRedeemPermission = async () => {
     if (!permission) return;
     if (!sessionAccount) return;
 
     setLoading(true);
-
     try {
       const { accountMeta, context, signerMeta } = permission;
 
@@ -52,39 +49,14 @@ export default function RedeemPermissionButton() {
         return;
       }
 
-      const { fast: fee } = await pimlicoClient.getUserOperationGasPrice();
+      const redeemTxHash = await redeemTransaction(
+        sessionAccount,
+        delegationManager,
+        context,
+        accountMeta
+      );
 
-      /**
-       * Sends a user operation with delegation to the bundler client. Only the session account can redeem the delegation.
-       * This operation includes:
-       * - A transfer of 1 ETH to a specific address
-       * - The required permissions context and delegation manager
-       * - Account metadata and gas fee information
-       * @returns {Promise<Hex>} The hash of the user operation
-       */
-      const hash = await bundlerClient.sendUserOperationWithDelegation({
-        publicClient,
-        account: sessionAccount,
-        calls: [
-          {
-            to: sessionAccount.address,
-            data: "0x",
-            value: 1n,
-            permissionsContext: context,
-            delegationManager,
-          },
-        ],
-        ...fee,
-        accountMetadata: accountMeta,
-      });
-
-      const { receipt } = await bundlerClient.waitForUserOperationReceipt({
-        hash,
-      });
-
-      setTxHash(receipt.transactionHash);
-
-      console.log(receipt);
+      setTxHash(redeemTxHash);
     } catch (error) {
       console.error(error);
     } finally {

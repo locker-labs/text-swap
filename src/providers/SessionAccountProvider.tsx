@@ -31,14 +31,14 @@ export const SessionAccountProvider = ({
   const { removePermission } = usePermissions();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
   const createSessionAccount = useCallback(
     async (privateKey?: `0x${string}`) => {
       try {
         setIsLoading(true);
         setError(null);
-
+        const generatedPk = generatePrivateKey();
         const key = privateKey || PRIVATE_KEY_STORAGE_KEY;
+
         const account = privateKeyToAccount(key as `0x${string}`);
 
         const newSessionAccount = await toMetaMaskSmartAccount({
