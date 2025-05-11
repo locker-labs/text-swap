@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Roboto, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { SessionAccountProvider } from "@/providers/SessionAccountProvider";
 import { PermissionProvider } from "@/providers/PermissionProvider";
 import { TwitterProvider } from "@/providers/TwitterProvider";
+import { StepProvider } from "@/providers/StepProvider";
 import "../services/publicClient";
 
-const geistSans = Geist({
+const geistSans = Roboto({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
+const geistMono = Roboto_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
@@ -41,7 +42,9 @@ export default function RootLayout({
             <PermissionProvider>
               <SessionAccountProvider>
                 <TwitterProvider>
-                  {children}
+                  <StepProvider>
+                    {children}
+                  </StepProvider>
                 </TwitterProvider>
               </SessionAccountProvider>
             </PermissionProvider>

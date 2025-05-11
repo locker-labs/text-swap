@@ -1,14 +1,18 @@
 "use client";
+import Navbar from "@/components/Navbar";
 import Steps from "@/components/Steps";
-import Hero from "@/components/Hero";
 import Footer from "@/components/Footer";
 import { useEffect, useState } from "react";
 import InstallFlask from "@/components/InstallFlask";
 import WalletInfoContainer from "@/components/WalletInfoContainer";
 import Loader from "@/components/Loader";
 import PermissionInfo from "@/components/PermissionInfo";
+import StepIndicators from "@/components/StepIndicators";
+import ActiveStep from "@/components/ActiveStep";
+import { useSteps } from "@/providers/StepProvider";
 
 export default function Home() {
+  const { setActiveStep } = useSteps();
   const [isFlask, setIsFlask] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -33,12 +37,25 @@ export default function Home() {
     detectFlask();
   }, []);
 
+  useEffect(() => {
+    if (!isFlask) {
+      setActiveStep(1);
+    } else {
+      setActiveStep(2);
+    }
+  }, [isFlask])
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white flex flex-col">
+    <div className="min-h-screen bg-white text-[#6E6E6E] flex flex-col">
       <main className="container mx-auto px-4 py-8 max-w-4xl flex-1">
-        <Hero />
+        <Navbar/>
+        <StepIndicators />
+        {isLoading ? <Loader /> : <ActiveStep />}
+        {/* TODO: comment below */}
         <WalletInfoContainer />
+        {/* TODO: comment below */}
         <PermissionInfo />
+        {/* TODO: comment below */}
         {isLoading ? <Loader /> : isFlask ? <Steps /> : <InstallFlask />}
       </main>
       <Footer />
