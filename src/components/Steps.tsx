@@ -3,14 +3,19 @@ import { useEffect, useState } from "react";
 import GrantPermissionsButton from "./GrantPermissionsButton";
 import TwitterConnection from "./TwitterConnection";
 import { usePermissions } from "@/providers/PermissionProvider";
+import RedeemPermissionButton from "./RedeemPermissionButton";
+import { TwitterUser } from "@/services/twitterOAuth";
 
 export default function Steps() {
+  const [twitterUser, setTwitterUser] = useState<TwitterUser | null>(null);
   const [step, setStep] = useState<number>(1);
   const { permission } = usePermissions();
 
   useEffect(() => {
     if (permission) {
       setStep(2);
+    } else if (twitterUser) {
+      setStep(3);
     } else {
       setStep(1);
     }
@@ -22,8 +27,8 @@ export default function Steps() {
         <div className="space-y-6">
           <div className="bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700">
             <p className="text-gray-300 mb-4">
-              Grant permissions to allow Locker to make transactions on your behalf.
-              This will prompt you to:
+              Grant permissions to allow Locker to make transactions on your
+              behalf. This will prompt you to:
             </p>
             <ol className="text-gray-300 list-decimal list-inside space-y-2">
               <li>
@@ -33,7 +38,8 @@ export default function Steps() {
               <li>Grant permissions to the Locker delegate address</li>
             </ol>
             <p className="text-gray-300 mt-4">
-              After granting permissions, you'll connect your Twitter account to complete the process.
+              After granting permissions, you'll connect your Twitter account to
+              complete the process.
             </p>
           </div>
           <GrantPermissionsButton />
@@ -43,16 +49,31 @@ export default function Steps() {
         <div className="space-y-6">
           <div className="bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700">
             <p className="text-gray-300">
-              Connect your Twitter account and send a tweet to complete your transaction.
+              Connect your Twitter account and send a tweet to complete your
+              transaction.
             </p>
             <div className="flex items-center gap-2 bg-blue-900/30 border border-blue-700 rounded-md p-3 mb-4 mt-4">
               <span className="text-blue-400">ℹ️</span>
               <p className="text-blue-200">
-                Your tweet must be in the format: "@locker_money buy token: 0x... amount: 100"
+                Your tweet must be in the format: "@locker_money buy token:
+                0x... amount: 100"
               </p>
             </div>
           </div>
-          <TwitterConnection />
+          <TwitterConnection
+            twitterUser={twitterUser}
+            setTwitterUser={setTwitterUser}
+          />
+        </div>
+      )}
+      {step === 3 && (
+        <div className="space-y-6">
+          <div className="bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700">
+            <p className="text-gray-300 mb-4">
+              Your permission has been granted. You can now redeem it.
+            </p>
+          </div>
+          <RedeemPermissionButton />
         </div>
       )}
     </div>

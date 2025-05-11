@@ -11,7 +11,6 @@ import { Loader2, CheckCircle, ExternalLink } from "lucide-react";
 import { config } from "@/config";
 
 export default function RedeemPermissionButton() {
-  const { sessionAccount } = useSessionAccount();
   const { permission } = usePermissions();
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState<Hex | null>(null);
@@ -20,7 +19,10 @@ export default function RedeemPermissionButton() {
     chain: sepolia,
     transport: http(),
   });
-
+  const { createSessionAccount, sessionAccount } = useSessionAccount();
+  if (!sessionAccount) {
+    throw new Error("Session account is not available");
+  }
   /**
    * Handles the redemption of delegation permissions.
    * Retrieves stored permission data, sends a user operation with delegation,
@@ -29,7 +31,6 @@ export default function RedeemPermissionButton() {
    */
   const handleRedeemPermission = async () => {
     if (!permission) return;
-
     if (!sessionAccount) return;
 
     setLoading(true);
@@ -112,7 +113,7 @@ export default function RedeemPermissionButton() {
             <ExternalLink className="h-5 w-5" />
           </button>
         </div>
-        
+
         <div className="space-y-6">
           <button
             className="w-full bg-blue-600 cursor-pointer hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
