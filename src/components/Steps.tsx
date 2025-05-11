@@ -13,7 +13,7 @@ export default function Steps() {
 
   useEffect(() => {
     if (permission) {
-      setStep(2);
+      setStep(3);
     } else if (twitterUser) {
       setStep(3);
     } else {
