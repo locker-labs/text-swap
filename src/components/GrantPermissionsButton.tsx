@@ -34,6 +34,7 @@ export default function GrantPermissionsButton() {
     if (!sessionAccount) {
       createSessionAccount();
     }
+    console.log("sessionAccount", sessionAccount);
     setIsLoading(true);
 
     try {
@@ -68,6 +69,7 @@ export default function GrantPermissionsButton() {
           },
         },
       ]);
+      console.log("permissions", permissions);
       savePermission(permissions[0]);
     } catch (error) {
       console.error("Error granting permissions:", error);
