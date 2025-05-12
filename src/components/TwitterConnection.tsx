@@ -104,7 +104,7 @@ export default function TwitterConnection({
             <Twitter className="h-5 w-5" />
           </a>
         </div>
-        {startPolling && <FetchTweetData />}
+        {startPolling && <FetchTweetData userId="1796891124319109120" />}
       </div>
     );
   }

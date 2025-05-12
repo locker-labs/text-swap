@@ -1,18 +1,21 @@
 import { Copy, CheckCircle } from "lucide-react";
-import { useSteps } from "@/providers/StepProvider";
 import { useState } from "react";
 import { TwitterUser } from "@/services/twitterOAuth";
 import copy from 'clipboard-copy';
+import FetchTweetData from "@/components/FetchTweetData";
 
-export default function SendTweet({ twitterUser }: { twitterUser: TwitterUser | null }) {
+export default function SendTweet({ twitterUser, setStartPolling, startPolling } : {
+  twitterUser: TwitterUser | null;
+  setStartPolling: React.Dispatch<React.SetStateAction<boolean>>;
+  startPolling: boolean;
+}) {
     const [isCopied, setIsCopied] = useState<boolean>(false);
-    const { setActiveStep } = useSteps();
 
     const tokenAddress = "0x1234567890abcdef1234567890abcdef12345678";
     const tweetText = `@locker_money buy token: ${tokenAddress} amount: 1`;
 
-    return (
-    <div className={`max-w-[545px] px-[40px] flex flex-col text-center items-center border-[2px] border-[#D3D3D3] rounded-lg shadow-md overflow-hidden`}>
+    return (<div>
+      <div className={`max-w-[545px] px-[40px] flex flex-col text-center items-center border-[2px] border-[#D3D3D3] rounded-lg shadow-md overflow-hidden`}>
 
         <h3 className="text-[#000000] mt-[20px] text-[26px] text-xl font-bold font-[Roboto]">
           Tweet
@@ -34,6 +37,7 @@ export default function SendTweet({ twitterUser }: { twitterUser: TwitterUser | 
             <div onClick={isCopied ? (() => {}) : (() => {
                 copy(tweetText).then(() => {
                     setIsCopied(true);
+                    setStartPolling(true);
                     setTimeout(() => {
                         setIsCopied(false);
                     }, 2000);
@@ -47,8 +51,7 @@ export default function SendTweet({ twitterUser }: { twitterUser: TwitterUser | 
 
         <a
             onClick={() => {
-              // TODO: when this button is clicked, start polling for tweet
-              // setStartPolling(true);
+              setStartPolling(prev => !prev);
             }}
             href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
               tweetText
@@ -59,5 +62,12 @@ export default function SendTweet({ twitterUser }: { twitterUser: TwitterUser | 
           >
             <span>Open Twitter & Send Tweet</span>
           </a>
-    </div>)
+      </div>
+
+      {/* @dev for testing, replace twitterUser with !twitterUser */}
+      {twitterUser && startPolling && <div className={`mt-[20px] max-w-[545px] p-[40px] flex flex-col text-center items-center border-[2px] border-[#D3D3D3] rounded-lg shadow-md overflow-hidden`}>
+        <FetchTweetData userId={twitterUser.id} />
+      </div>}
+    </div>
+    )
 }

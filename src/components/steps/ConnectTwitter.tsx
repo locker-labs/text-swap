@@ -1,19 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle, Loader2, Twitter, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import { initiateTwitterOAuth, getCurrentTwitterUser, TwitterUser } from "@/services/twitterOAuth";
 import { useSearchParams } from "next/navigation";
-import FetchTweetData from "@/components/FetchTweetData";
-import { useSteps } from "@/providers/StepProvider";
 
 export default function ConnectTwitter({ setTwitterUser }: { setTwitterUser: (user: TwitterUser | null) => void }) {
-  const [startPolling, setStartPolling] = useState<boolean>(false);
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
-  const [tweetText, setTweetText] = useState<string>("");
   const searchParams = useSearchParams();
-
-  const { setActiveStep } = useSteps();
 
     // Check for connection status and errors from search params
     useEffect(() => {
@@ -22,10 +16,6 @@ export default function ConnectTwitter({ setTwitterUser }: { setTwitterUser: (us
             const user = getCurrentTwitterUser();
             if (user) {
                 setTwitterUser(user);
-
-                // Generate tweet text with a sample token address
-                const tokenAddress = "0x1234567890abcdef1234567890abcdef12345678";
-                setTweetText(`@locker_money buy token: ${tokenAddress} amount: 100`);
             }
         }
 
@@ -42,10 +32,6 @@ export default function ConnectTwitter({ setTwitterUser }: { setTwitterUser: (us
         const user = getCurrentTwitterUser();
         if (user) {
             setTwitterUser(user);
-
-            // Generate tweet text with a sample token address
-            const tokenAddress = "0x1234567890abcdef1234567890abcdef12345678";
-            setTweetText(`@locker_money buy token: ${tokenAddress} amount: 100`);
         }
     }, []);
 

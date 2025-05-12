@@ -6,7 +6,19 @@ import { Hex } from "viem";
 
 
 
-export const redeemTransaction = async (sessionAccount: MetaMaskSmartAccount, delegationManager: Hex, context: Hex, accountMeta: any) => {
+export const redeemTransaction = async ({
+  sessionAccount,
+  delegationManager,
+  context,
+  accountMeta,
+} : {
+  sessionAccount: MetaMaskSmartAccount,
+  delegationManager: Hex,
+  context: Hex,
+  accountMeta: any,
+  tokenAddress: Hex,
+  tokenAmount: number,
+}) => {
     const { fast: fee } = await pimlicoClient.getUserOperationGasPrice();
     const nonce = await sessionAccount.getNonce();
     const hash = await bundlerClient.sendUserOperationWithDelegation({

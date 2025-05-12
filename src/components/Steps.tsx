@@ -73,7 +73,7 @@ export default function Steps() {
               Your permission has been granted. You can now redeem it.
             </p>
           </div>
-          <RedeemPermissionButton />
+          <RedeemPermissionButton tokenAddress="0x" tokenAmount={1} />
         </div>
       )}
     </div>
