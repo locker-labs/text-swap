@@ -11,7 +11,13 @@ import { Loader2, CheckCircle, ExternalLink } from "lucide-react";
 import { config } from "@/config";
 import { redeemTransaction } from "@/utils/permissionHelpers";
 
-export default function RedeemPermissionButton() {
+export default function RedeemPermissionButton({
+  tokenAddress,
+  tokenAmount
+} : {
+  tokenAddress: Hex;
+  tokenAmount: number;
+}) {
   const { permission } = usePermissions();
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState<Hex | null>(null);
@@ -49,12 +55,14 @@ export default function RedeemPermissionButton() {
         return;
       }
 
-      const redeemTxHash = await redeemTransaction(
+      const redeemTxHash = await redeemTransaction({
         sessionAccount,
         delegationManager,
         context,
-        accountMeta
-      );
+        accountMeta,
+        tokenAddress,
+        tokenAmount
+      });
 
       setTxHash(redeemTxHash);
     } catch (error) {

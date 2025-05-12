@@ -1,5 +1,7 @@
+import { Address } from "viem";
+
 export type TweetData = {
     tokenAmount: number;
-    tokenAddress: string;
+    tokenAddress: Address;
     tweetId: string;
 }

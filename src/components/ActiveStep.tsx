@@ -9,6 +9,7 @@ import { TwitterUser } from "@/services/twitterOAuth";
 import { usePermissions } from "@/providers/PermissionProvider";
 
 export default function ActiveStep() {
+    const [startPolling, setStartPolling] = useState<boolean>(false);
     const [twitterUser, setTwitterUser] = useState<TwitterUser | null>(null);
     const { permission, removePermission } = usePermissions();
     const { activeStep, setActiveStep } = useSteps();
@@ -33,7 +34,7 @@ export default function ActiveStep() {
                 }
             }
         }
-    }, [activeStep, twitterUser])
+    }, [permission, activeStep, twitterUser])
 
     function renderStep() {
         switch(activeStep) {
@@ -44,7 +45,7 @@ export default function ActiveStep() {
         case 3:
             return <GrantPermission/>;
         case 4:
-            return <SendTweet twitterUser={twitterUser} />;
+            return <SendTweet twitterUser={twitterUser} setStartPolling={setStartPolling} startPolling={startPolling} />;
         default:
             return <>Success!</>;
         }

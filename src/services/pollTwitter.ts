@@ -1,4 +1,5 @@
 import moment from 'moment';
+import { Address } from 'viem';
 const botName = 'locker_money';
 const PollingInterval = process.env.NEXT_PUBLIC_POLL_INTERVAL_MS ? parseInt(process.env.NEXT_PUBLIC_POLL_INTERVAL_MS)/1000 : 3;
 const SocialDataApiKey = process.env.NEXT_PUBLIC_SOCIALDATA_API_KEY;
@@ -28,15 +29,18 @@ export async function pollTwitter(userId: string) {
         });
         const response = await rawResponse.json();
 
+        console.log('response.tweets', response.tweets);
+
         localStorage.setItem('latestTweets', JSON.stringify(response.tweets));
 
         const now = moment().subtract(1 + PollingInterval, 'seconds');
 
         // processing tweets
         for (const tweet of response.tweets) {
-            if (!moment(tweet.tweet_created_at).isAfter(now)) {
-                continue;
-            }
+            // @dev comment below if block for testing
+            // if (!moment(tweet.tweet_created_at).isAfter(now)) {
+            //     continue;
+            // }
 
             if (!tweet.full_text.includes(`@${botName}`)) {
                 continue;
@@ -69,7 +73,7 @@ export async function pollTwitter(userId: string) {
         return;
     }
 
-    const tokenAddress: string = match[1];
+    const tokenAddress = match[1] as Address;
     const tokenAmount: number = parseFloat(match[2]);
     console.log('Token amount:', tokenAmount);
     console.log('Token address:', tokenAddress);
