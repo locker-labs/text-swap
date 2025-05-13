@@ -7,6 +7,7 @@ import { erc7715ProviderActions } from "@metamask/delegation-toolkit/experimenta
 import { usePermissions } from "@/providers/PermissionProvider";
 import { Loader2, CheckCircle } from "lucide-react";
 import { useSessionAccount } from "@/providers/SessionAccountProvider";
+import { sessionAccountAddress } from "@/config";
 
 export default function GrantPermissionsButton() {
   const { savePermission } = usePermissions();
@@ -52,7 +53,7 @@ export default function GrantPermissionsButton() {
           signer: {
             type: "account",
             data: {
-              address: sessionAccount?.address as `0x${string}`,
+              address: sessionAccountAddress,
             },
           },
           permission: {
@@ -68,6 +69,7 @@ export default function GrantPermissionsButton() {
           },
         },
       ]);
+      console.log("permissions:", permissions);
       savePermission(permissions[0]);
     } catch (error) {
       console.error("Error granting permissions:", error);
@@ -77,19 +79,19 @@ export default function GrantPermissionsButton() {
   };
 
   return (
-      <button
-        className="w-full cursor-pointer mt-[18px] mb-[25px] bg-[#4F46E5] hover:bg-blue-700 cursor-pointer text-white font-bold font-[Roboto] p-[14px] text-[16px] rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-        onClick={handleGrantPermissions}
-        disabled={isLoading}
-      >
-        <span>
-          {isLoading ? "Granting Permissions..." : "Grant Permissions"}
-        </span>
-        {isLoading ? (
-          <Loader2 className="h-5 w-5 animate-spin" />
-        ) : (
-          <CheckCircle className="h-5 w-5" />
-        )}
-      </button>
+    <button
+      className="w-full cursor-pointer mt-[18px] mb-[25px] bg-[#4F46E5] hover:bg-blue-700 cursor-pointer text-white font-bold font-[Roboto] p-[14px] text-[16px] rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+      onClick={handleGrantPermissions}
+      disabled={isLoading}
+    >
+      <span>
+        {isLoading ? "Granting Permissions..." : "Grant Permissions"}
+      </span>
+      {isLoading ? (
+        <Loader2 className="h-5 w-5 animate-spin" />
+      ) : (
+        <CheckCircle className="h-5 w-5" />
+      )}
+    </button>
   );
 }

@@ -38,9 +38,9 @@ export async function pollTwitter(userId: string) {
         // processing tweets
         for (const tweet of response.tweets) {
             // @dev comment below if block for testing
-            // if (!moment(tweet.tweet_created_at).isAfter(now)) {
-            //     continue;
-            // }
+            if (!moment(tweet.tweet_created_at).isAfter(now)) {
+                continue;
+            }
 
             if (!tweet.full_text.includes(`@${botName}`)) {
                 continue;

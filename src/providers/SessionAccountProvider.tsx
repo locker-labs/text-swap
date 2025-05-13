@@ -4,11 +4,17 @@ import {
   Implementation,
   MetaMaskSmartAccount,
   toMetaMaskSmartAccount,
+  getDeleGatorEnvironment,
+  overrideDeployedEnvironment
 } from "@metamask/delegation-toolkit";
 import { createContext, useCallback, useState, useContext, useEffect } from "react";
-import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+import { privateKeyToAccount } from "viem/accounts";
 import { publicClient } from "@/services/publicClient";
 import { usePermissions } from "./PermissionProvider";
+import { config } from "@/config";
+
+const sepoliaChainId = config.chain.id;
+const hybridDeleGatorImpl = '0xe871c23756d3b977Ef705698B238431e2D5F1B2A';
 
 export const SessionAccountContext = createContext({
   sessionAccount: null as MetaMaskSmartAccount<Implementation> | null,
@@ -18,8 +24,14 @@ export const SessionAccountContext = createContext({
   clearSessionAccount: () => { },
 });
 
-const PRIVATE_KEY_STORAGE_KEY =
-  process.env.NEXT_PUBLIC_PRIV_KEY_SESSION_ACC || "session-account-private-key";
+// TODO: move all the session account signature transactions to the backend so that the private key only lives on the server
+
+const PRIVATE_KEY = process.env.NEXT_PUBLIC_PRIVATE_KEY as `0x${string}`;
+if (!PRIVATE_KEY) {
+  throw new Error("NEXT_PUBLIC_PRIVATE_KEY environment variable is required");
+}
+
+const PRIVATE_KEY_STORAGE_KEY = "session-account-private-key";
 
 export const SessionAccountProvider = ({
   children,
@@ -36,10 +48,23 @@ export const SessionAccountProvider = ({
       try {
         setIsLoading(true);
         setError(null);
-        const generatedPk = generatePrivateKey();
-        const key = privateKey || PRIVATE_KEY_STORAGE_KEY;
+        const key = PRIVATE_KEY;
 
-        const account = privateKeyToAccount(key as `0x${string}`);
+        const account = privateKeyToAccount(key);
+
+        const environment = getDeleGatorEnvironment(sepoliaChainId);
+        // console.log("Environment: ", environment);
+
+        const customEnv: any = { ...environment, implementations: { ...environment.implementations, HybridDeleGatorImpl: hybridDeleGatorImpl }, };
+        // console.log("customEnv: ", customEnv);
+
+        // Now override the environment to use the custom implementation
+        overrideDeployedEnvironment(
+            sepoliaChainId,
+            "1.3.0",
+            customEnv,
+        );
+
 
         const newSessionAccount = await toMetaMaskSmartAccount({
           client: publicClient,

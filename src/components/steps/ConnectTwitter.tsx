@@ -5,7 +5,11 @@ import { Info } from "lucide-react";
 import { initiateTwitterOAuth, getCurrentTwitterUser, TwitterUser } from "@/services/twitterOAuth";
 import { useSearchParams } from "next/navigation";
 
-export default function ConnectTwitter({ setTwitterUser }: { setTwitterUser: (user: TwitterUser | null) => void }) {
+export default function ConnectTwitter({
+  setTwitterUser
+}: {
+  setTwitterUser: (user: TwitterUser | null) => void;
+}) {
   const [isConnecting, setIsConnecting] = useState<boolean>(false);
   const searchParams = useSearchParams();
 
