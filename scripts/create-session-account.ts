@@ -9,6 +9,8 @@ import { createPimlicoClient } from "permissionless/clients/pimlico";
 import dotenv from "dotenv";
 dotenv.config();
 
+const delegatorAddress = '0x29DCAbCFeD2F3AbdD8D097521032Df9f9936dC4f';
+
 // Resolves the DeleGatorEnvironment for Linea Sepolia
 const sepoliaChainId = 11155111
 const hybridDeleGatorImpl = '0xe871c23756d3b977Ef705698B238431e2D5F1B2A'
@@ -42,6 +44,7 @@ const smartAccountOg = await toMetaMaskSmartAccount({
 });
 
 console.log("smartAccountOg:", smartAccountOg.address);
+// 0xB031Cacdb585e8E49b1cEADfB125a9606a976418
 
 // Now override the environment to use the custom implementation
 overrideDeployedEnvironment(
@@ -59,6 +62,7 @@ const smartAccountCustom = await toMetaMaskSmartAccount({
 });
 
 console.log("smartAccountCustom:", smartAccountCustom.address);
+// 0x3620DD4dFa2207D85C88286F2655e0f6E12EDb27
 
 const rpcUrl = `https://public.pimlico.io/v2/${sepoliaChainId}/rpc?apikey=${process.env.PIMLICO_API_KEY}`;
 export const bundlerClient = createBundlerClient({
@@ -86,7 +90,7 @@ const setHandleDelegatorAddressData = encodeFunctionData({
         outputs: []
     }],
     functionName: 'setHandleDelegatorAddress',
-    args: [handleBytes, '0x2E6c29b8E392bcF37aEc500B619EdCacF41Ff0Bf']
+    args: [handleBytes, delegatorAddress]
 });
 
 const data = setHandleDelegatorAddressData;
@@ -115,13 +119,13 @@ console.log("data:", data);
 
 const permissionData = {
     "chainId": "0xaa36a7",
-    "address": "0x2E6c29b8E392bcF37aEc500B619EdCacF41Ff0Bf",
+    "address": delegatorAddress,
     "expiry": 1747180800,
     "isAdjustmentAllowed": true,
     "signer": {
         "type": "account",
         "data": {
-            "address": "0x3E1F92b36190E03DF15b22BA18EE3AbA958dF80E"
+            "address": smartAccountCustom.address,
         }
     },
     "permission": {
@@ -191,3 +195,6 @@ const { receipt } = await bundlerClient.waitForUserOperationReceipt({
 });
 
 console.log("receipt:", receipt);
+
+console.log('exiting...')
+process.exit(0)

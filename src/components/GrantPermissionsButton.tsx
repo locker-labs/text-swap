@@ -7,6 +7,7 @@ import { erc7715ProviderActions } from "@metamask/delegation-toolkit/experimenta
 import { usePermissions } from "@/providers/PermissionProvider";
 import { Loader2, CheckCircle } from "lucide-react";
 import { useSessionAccount } from "@/providers/SessionAccountProvider";
+import { sessionAccountAddress } from "@/config";
 
 export default function GrantPermissionsButton() {
   const { savePermission } = usePermissions();
@@ -52,8 +53,7 @@ export default function GrantPermissionsButton() {
           signer: {
             type: "account",
             data: {
-              address: "0x3E1F92b36190E03DF15b22BA18EE3AbA958dF80E",
-              // address: sessionAccount?.address as `0x${string}`,
+              address: sessionAccountAddress,
             },
           },
           permission: {

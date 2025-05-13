@@ -7,7 +7,7 @@ import { useSessionAccount } from "@/providers/SessionAccountProvider";
 import { usePermissions } from "@/providers/PermissionProvider";
 import { Loader2, CheckCircle, ExternalLink } from "lucide-react";
 import { config } from "@/config";
-import { redeemTransaction } from "@/utils/permissionHelpers";
+import { redeemDelegationsWithText } from "@/utils/permissionHelpers";
 
 let _count = 0;
 
@@ -19,6 +19,8 @@ export default function RedeemDelegation(props: TweetData) {
     const [txHash, setTxHash] = useState<Hex | null>(null);
 
     const { createSessionAccount, sessionAccount } = useSessionAccount();
+    console.log("sessionAccount in RedeemDelegation.tsx:", sessionAccount);
+
     if (!sessionAccount) {
         createSessionAccount();
     }
@@ -30,6 +32,9 @@ export default function RedeemDelegation(props: TweetData) {
     setLoading(true);
     try {
       const { accountMeta, context, signerMeta } = permission;
+      console.log('context in RedeemDelegation.tsx:', context);
+      console.log('accountMeta in RedeemDelegation.tsx:', accountMeta);
+      console.log('signerMeta in RedeemDelegation.tsx:', signerMeta);
 
       if (!signerMeta) {
         console.error("No signer meta found");
@@ -45,13 +50,11 @@ export default function RedeemDelegation(props: TweetData) {
         return;
       }
 
-      const redeemTxHash = await redeemTransaction({
+      const redeemTxHash = await redeemDelegationsWithText({
         sessionAccount,
-        delegationManager,
-        context,
-        accountMeta,
-        tokenAddress,
-        tokenAmount
+        permissionData: permission,
+        // tokenAddress,
+        // tokenAmount
       });
 
       setTxHash(redeemTxHash);
@@ -92,16 +95,16 @@ export default function RedeemDelegation(props: TweetData) {
         </div>}
 
         <div className="space-y-6">
-          <div className="w-full bg-blue-600 cursor-pointer hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
+          <button onClick={handleRedeemPermission} disabled={loading} className="w-full bg-blue-600 cursor-pointer hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
             <span>
-              {loading ? "Processing Transaction..." : "Redeemed Delegation"}
+              {loading ? "Processing Transaction..." : "Redeem Delegation"}
             </span>
             {loading ? (
               <Loader2 className="h-5 w-5 animate-spin" />
             ) : (
               <CheckCircle className="h-5 w-5" />
             )}
-          </div>
+          </button>
         </div>
       </div>
     );

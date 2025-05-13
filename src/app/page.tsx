@@ -52,11 +52,11 @@ export default function Home() {
         <StepIndicators />
         {isLoading ? <Loader /> : <ActiveStep />}
         {/* TODO: comment below */}
-        <WalletInfoContainer />
+        {/* <WalletInfoContainer /> */}
         {/* TODO: comment below */}
-        <PermissionInfo />
+        {/* <PermissionInfo /> */}
         {/* TODO: comment below */}
-        {isLoading ? <Loader /> : isFlask ? <Steps /> : <InstallFlask />}
+        {/* {isLoading ? <Loader /> : isFlask ? <Steps /> : <InstallFlask />} */}
       </main>
       <Footer />
     </div>
