@@ -1,9 +1,18 @@
 "use client";
 
 import GrantPermissionsButton from "@/components/GrantPermissionsButton";
-import { Info } from "lucide-react";
+import { TwitterUser } from "@/services/twitterOAuth";
+import { Info, Loader2 } from "lucide-react";
+import { usePermissions } from "@/providers/PermissionProvider";
 
-export default function GrantPermission() {
+export default function GrantPermission({
+  twitterUser,
+  isXHandleSet,
+}: {
+  twitterUser: TwitterUser | null;
+  isXHandleSet: boolean | null;
+}) {
+  const { permission } = usePermissions();
 
     return (
       <div className={`max-w-[545px] px-[40px] flex flex-col text-center items-center border-[2px] border-[#D3D3D3] rounded-lg shadow-md overflow-hidden`}>
@@ -28,6 +37,13 @@ export default function GrantPermission() {
         </p>
 
         <GrantPermissionsButton />
+
+        {permission && twitterUser && !isXHandleSet && <div className="w-full mb-[25px] mx-[20px] p-[20px] border border-[#D6EAFD] bg-[#D6EAFD] rounded-lg text-left flex items-center justify-start gap-[8px]">
+          <Loader2 className="h-5 w-5 animate-spin" color="#1E90FF" />
+          <p className="text-[#1E90FF] text-[16px] font-[Roboto]">
+            Registering your xHandle with your gator account...
+          </p>
+        </div>}
     </div>
     )
 

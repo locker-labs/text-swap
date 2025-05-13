@@ -11,12 +11,13 @@ dotenv.config();
 
 // Resolves the DeleGatorEnvironment for Linea Sepolia
 const sepoliaChainId = 11155111
-const hybridDeleGatorImpl = '0x79EbfdDD65796a0ac72707C62724010b30047C11'
+const hybridDeleGatorImpl = '0x79EbfdDD65796a0ac72707C62724010b30047C11';
+
 const deploySalt = "0x";
-const privateKey = process.env.PRIVATE_KEY;
+const privateKey = process.env.NEXT_PUBLIC_PRIVATE_KEY;
 
 if (!privateKey) {
-    throw new Error("PRIVATE_KEY environment variable is required");
+    throw new Error("NEXT_PUBLIC_PRIVATE_KEY environment variable is required");
 }
 
 
