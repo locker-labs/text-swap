@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@metamask/delegation-toolkit": "^0.10.2",
+    "@metamask/delegation-utils": "^0.10.0",
     "@tailwindcss/postcss": "^4.1.1",
     "clipboard-copy": "^4.0.1",
     "dotenv": "^16.5.0",
