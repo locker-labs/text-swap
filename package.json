@@ -11,8 +11,6 @@
   "dependencies": {
     "@metamask/delegation-toolkit": "^0.10.2",
     "@metamask/delegation-utils": "^0.10.0",
-    "@reclaimprotocol/js-sdk": "^3.0.2",
-    "@reclaimprotocol/zk-fetch": "^0.3.3",
     "@tailwindcss/postcss": "^4.1.1",
     "clipboard-copy": "^4.0.1",
     "dotenv": "^16.5.0",

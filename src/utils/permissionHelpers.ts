@@ -46,25 +46,43 @@ export const swapFromTwitter = async ({
 
     const SINGLE_DEFAULT_MODE = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
-    let proof;
-    let onchainProof;
+    // dummy proof
+    let onchainProof = {
+  claimInfo: {
+    context: '{"extractedParameters":{"data":"5d2\\r\\n{\\"tweet_created_at\\":\\"2025-05-14T00:22:48.000000Z\\",\\"id\\":1922447468689547734,\\"id_str\\":\\"1922447468689547734\\",\\"type\\":\\"tweet\\",\\"conversation_id_str\\":\\"1922447468689547734\\",\\"community_id_str\\":null,\\"community_name\\":null,\\"text\\":null,\\"full_text\\":\\"buy token: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 ethAmount: 0.0001 @locker_money\\",\\"source\\":\\"<a href=\\\\\\"https:\\\\/\\\\/mobile.twitter.com\\\\\\" rel=\\\\\\"nofollow\\\\\\">Twitter Web App<\\\\/a>\\",\\"truncated\\":false,\\"in_reply_to_status_id\\":null,\\"in_reply_to_status_id_str\\":null,\\"in_reply_to_user_id\\":null,\\"in_reply_to_user_id_str\\":null,\\"in_reply_to_screen_name\\":null,\\"user\\":{\\"id\\":321867505,\\"id_str\\":\\"321867505\\",\\"name\\":\\"Michael Nivram\\",\\"screen_name\\":\\"mamemia\\",\\"location\\":\\"Africa\\",\\"url\\":null,\\"description\\":\\"You know what I mean\\",\\"protected\\":false,\\"verified\\":false,\\"followers_count\\":27,\\"friends_count\\":3,\\"listed_count\\":0,\\"favourites_count\\":1,\\"statuses_count\\":40,\\"created_at\\":\\"2011-06-22T08:02:11.000000Z\\",\\"profile_banner_url\\":null,\\"profile_image_url_https\\":\\"https:\\\\/\\\\/abs.twimg.com\\\\/sticky\\\\/default_profile_images\\\\/default_profile_normal.png\\",\\"can_dm\\":false},\\"quoted_status_id\\":null,\\"quoted_status_id_str\\":null,\\"is_quote_status\\":false,\\"quoted_status\\":null,\\"retweeted_status\\":null,\\"quote_count\\":0,\\"reply_count\\":0,\\"retweet_count\\":0,\\"favorite_count\\":0,\\"views_count\\":5,\\"bookmark_count\\":0,\\"lang\\":\\"en\\",\\"entities\\":{\\"user_mentions\\":[{\\"id_str\\":\\"1772791634394075136\\",\\"name\\":\\"Locker\\",\\"screen_name\\":\\"locker_money\\",\\"indices\\":[72,85]}],\\"urls\\":[],\\"hashtags\\":[],\\"symbols\\":[]},\\"is_pinned\\":false}\\r\\n0\\r\\n\\r\\n"},"providerHash":"0x271b2bb1c653ddac4e092024a460842afa4694ff4054d48aaa31e9f7bf10512f"}',
+    parameters: '{"body":"","headers":{"User-Agent":"reclaim/0.0.1","accept":"application/json"},"method":"GET","responseMatches":[{"type":"regex","value":"(?<data>.*)"}],"responseRedactions":[],"url":"https://api.socialdata.tools/twitter/tweets/1922447468689547734"}',
+    provider: 'http'
+  },
+  signedClaim: {
+    claim: {
+      epoch: 1,
+      identifier: '0xe5ed9d4243707a3b9bdc61a787b1eb3660552f1cd690100b4122e95344d669dd' as `0x${string}`,
+      owner: '0x7349853215c3753b3dfeb06df79e2c0d22e7a5a3' as `0x${string}`,
+      timestampS: 1747194355
+    },
+    signatures: [
+      '0x32eddde26a9a906446619f81914a15fe610d92dd774298f1f6e6c027f2c4023f62e6b384624beb82f1cb2d9be6fcb5e45d968da51c79fa361651f482607c3a9e1c'
+    ] as `0x${string}`[]
+  }
+};
+    // TODO: @marvin
 
-    try {
-        const externalResponse = await fetch(`/api/reclaim/${tweetId}`, {
-            method: 'GET',
-        });
-        if (!externalResponse.ok) {
-            throw new Error(`Failed to fetch proof from server API`);
-        }
+    // try {
+    //     const externalResponse = await fetch(`/api/reclaim/${tweetId}`, {
+    //         method: 'GET',
+    //     });
+    //     if (!externalResponse.ok) {
+    //         throw new Error(`Failed to fetch proof from server API`);
+    //     }
 
-        const data = await externalResponse.json();
-        proof = data.data.proof;
-        onchainProof = data.data.onchainProof;
-        console.log('proof:', proof);
-        console.log('onchainProof:', onchainProof);
-    } catch(e) {
-        throw new Error(`Failed to fetch proof from server API: ${e}`);
-    }
+    //     const data = await externalResponse.json();
+    //     proof = data.data.proof;
+    //     onchainProof = data.data.onchainProof;
+    //     console.log('proof:', proof);
+    //     console.log('onchainProof:', onchainProof);
+    // } catch(e) {
+    //     throw new Error(`Failed to fetch proof from server API: ${e}`);
+    // }
 
 
     if (delegatorAddress !== permissionData.address) {

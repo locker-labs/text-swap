@@ -2,7 +2,9 @@ import { http, createPublicClient, createWalletClient, stringToHex, type Hex } f
 import { privateKeyToAccount } from "viem/accounts";
 import { sepolia } from "viem/chains";
 import dotenv from "dotenv";
+// @ts-ignore
 import { ReclaimClient } from '@reclaimprotocol/zk-fetch';
+// @ts-ignore
 import { transformForOnchain } from "@reclaimprotocol/js-sdk";
 import pkg from "@metamask/delegation-toolkit";
 const { createExecution, encodeExecutionCalldatas } = pkg;

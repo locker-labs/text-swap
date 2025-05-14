@@ -5,9 +5,11 @@ import { privateKeyToAccount } from "viem/accounts";
 import { createBundlerClient } from "viem/account-abstraction";
 import { sepolia as chain } from "viem/chains";
 import { createPimlicoClient } from "permissionless/clients/pimlico";
+// @ts-ignore
 import { ReclaimClient } from '@reclaimprotocol/zk-fetch';
 
 import dotenv from "dotenv";
+// @ts-ignore
 import { transformForOnchain } from "@reclaimprotocol/js-sdk";
 dotenv.config();
 
