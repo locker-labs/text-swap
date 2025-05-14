@@ -18,7 +18,7 @@ console.log("handle:", handle);
 
 // Resolves the DeleGatorEnvironment for Linea Sepolia
 const sepoliaChainId = 11155111
-const hybridDeleGatorImpl = '0xe871c23756d3b977Ef705698B238431e2D5F1B2A'
+const hybridDeleGatorImpl = '0xF2846032bD52dd42FFfe639eCcd9B50777BDCc9D'
 const deploySalt = "0x";
 const privateKey = process.env.PRIVATE_KEY;
 

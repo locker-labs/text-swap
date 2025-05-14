@@ -59,10 +59,10 @@ export default function GrantPermissionsButton({disabled = false}: {disabled?: b
           permission: {
             type: "native-token-stream",
             data: {
-              initialAmount: 100n, // 1 WEI
-              amountPerSecond: 100n, // 100 WEI per second
+              initialAmount: BigInt(1e15), // 0.001 ETH
+              amountPerSecond: BigInt(1e15), // 0.001 ETH per second
               startTime: currentTime,
-              maxAmount: parseEther("0.001"), // 0.001 ETH
+              maxAmount: parseEther("0.1"), // 0.1 ETH
               justification:
                 "Buy tokens on your behalf when you send verified messages from Twitter.",
             },
