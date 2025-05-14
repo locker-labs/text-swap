@@ -12,14 +12,15 @@ import { Address, zeroAddress } from "viem";
 import { setHandleDelegatorAddress } from "@/utils/setXHandle";
 
 let _renderFlag = false;
+let _isXHandleSetFlag = false;
 
-// const sampleTwitterUser = { id: '1796891124319109120', username: 'ashugeth', name: 'Ashu Gupta' }
+const sampleTwitterUser = { id: '1796891124319109120', username: 'ashugeth', name: 'Ashu Gupta' }
 
 export default function ActiveStep() {
     const [isXHandleSet, setIsXHandleSet] = useState<boolean | null>(null);
     const [startPolling, setStartPolling] = useState<boolean>(false);
     // @dev for testing, replace null with sampleTwitterUser in next line
-    const [twitterUser, setTwitterUser] = useState<TwitterUser | null>(null);
+    const [twitterUser, setTwitterUser] = useState<TwitterUser | null>(sampleTwitterUser);
     const { smartAccount, permission, removePermission } = usePermissions();
     const { activeStep, setActiveStep } = useSteps();
 
@@ -33,14 +34,14 @@ export default function ActiveStep() {
         
         (async function() {
             if (twitterUser) {
-            if (null === isXHandleSet) {
-                const address = await getXHandleAddress(twitterUser.username);
-                if (zeroAddress === address) {
-                    setIsXHandleSet(false);
-                } else {
-                    setIsXHandleSet(true);
+                if (null === isXHandleSet) {
+                    const address = await getXHandleAddress(twitterUser.username);
+                    if (zeroAddress === address) {
+                        setIsXHandleSet(false);
+                    } else {
+                        setIsXHandleSet(true);
+                    }
                 }
-            }
             }
         })();
     }, []);
@@ -48,9 +49,11 @@ export default function ActiveStep() {
 
     // check if delegator address exists for xHandle on getting permission
     useEffect(() => {
+        if (_isXHandleSetFlag) return;
+        _isXHandleSetFlag = true;
+
       (async function() {
         if (permission && twitterUser) {
-          if (null === isXHandleSet) {
             const address = await getXHandleAddress(twitterUser.username);
             console.log(`handle: ${twitterUser.username} address: ${address}`);
             if (zeroAddress === address) {
@@ -60,10 +63,10 @@ export default function ActiveStep() {
             } else {
                 setIsXHandleSet(true);
             }
-          }
         }
+        _isXHandleSetFlag = false;
       })();
-    }, [permission]);
+    }, [permission, isXHandleSet]);
 
 
     // calculate and set active step

@@ -89,7 +89,8 @@ export async function setHandleDelegatorAddress(username: string, delegatorAddre
     });
 
     console.log("User Operation Hash:", userOperationHash);
-    
+    console.log('Waiting for user operation receipt...');
+
     const { receipt } = await bundlerClient.waitForUserOperationReceipt({
         hash: userOperationHash,
     });
