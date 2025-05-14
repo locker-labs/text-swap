@@ -14,13 +14,13 @@ import { setHandleDelegatorAddress } from "@/utils/setXHandle";
 let _renderFlag = false;
 let _isXHandleSetFlag = false;
 
-const sampleTwitterUser = { id: '1796891124319109120', username: 'ashugeth', name: 'Ashu Gupta' }
+// const sampleTwitterUser = { id: '1796891124319109120', username: 'ashugeth', name: 'Ashu Gupta' }
 
 export default function ActiveStep() {
     const [isXHandleSet, setIsXHandleSet] = useState<boolean | null>(null);
     const [startPolling, setStartPolling] = useState<boolean>(false);
     // @dev for testing, replace null with sampleTwitterUser in next line
-    const [twitterUser, setTwitterUser] = useState<TwitterUser | null>(sampleTwitterUser);
+    const [twitterUser, setTwitterUser] = useState<TwitterUser | null>(null);
     const { smartAccount, permission, removePermission } = usePermissions();
     const { activeStep, setActiveStep } = useSteps();
 
@@ -55,7 +55,7 @@ export default function ActiveStep() {
       (async function() {
         if (permission && twitterUser) {
             const address = await getXHandleAddress(twitterUser.username);
-            console.log(`handle: ${twitterUser.username} address: ${address}`);
+            console.log(`handle: ${twitterUser.username} delegator address: ${address}`);
             if (zeroAddress === address) {
                 console.log('setting xHandle Delegator addresss');
                 await setHandleDelegatorAddress(twitterUser.username, smartAccount as Address);

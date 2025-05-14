@@ -74,7 +74,7 @@ export default function RedeemDelegation(props: TweetData) {
     }, [])
 
     return (
-      <div className="space-y-4">
+      <div className="w-full space-y-4">
         {txHash && <div className="bg-green-800 border-2 border-green-600 p-6 rounded-lg shadow-md">
           <h3 className="text-xl font-semibold text-white mb-2">
             Transaction Successful!
