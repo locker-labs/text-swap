@@ -60,8 +60,6 @@ export default function RedeemPermissionButton({
         delegationManager,
         context,
         accountMeta,
-        tokenAddress,
-        tokenAmount
       });
 
       setTxHash(redeemTxHash);
