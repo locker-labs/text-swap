@@ -1,14 +1,16 @@
 "use client"
 
-import { Loader2 } from "lucide-react";
+import { ExternalLink, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { pollTwitter } from "@/services/pollTwitter";
 import RedeemDelegation from "./RedeemDelegation";
 import { TweetData } from "@/types/TweetData"
+import { TwitterUser } from "@/services/twitterOAuth";
+
 const PollingInterval = process.env.NEXT_PUBLIC_POLL_INTERVAL_MS ? parseInt(process.env.NEXT_PUBLIC_POLL_INTERVAL_MS)/1000 : 5;
 let _count = 0;
 
-export default function FetchTweetData({ userId = '1796891124319109120' }: { userId: string }) {
+export default function FetchTweetData({ userId, twitterUser }: { userId: string; twitterUser: TwitterUser; }) {
     const [intervalId, setIntervalId] = useState<null | any>(null);
     const [tweetData, setTweetData] = useState<null | TweetData>(null);
 
@@ -51,5 +53,16 @@ export default function FetchTweetData({ userId = '1796891124319109120' }: { use
           </div>
     }
 
-    return <RedeemDelegation {...tweetData} />
+    return <div>
+        <div onClick={() => {
+            window.open(tweetData.tweetLink, '_blank');
+        }} className="mb-[20px] w-full bg-blue-600 cursor-pointer hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            <span className="text-white text-[16px] font-[Roboto]">
+                View Tweet
+            </span>
+            <ExternalLink className="h-5 w-5" />
+          </div>
+
+        <RedeemDelegation {...{...tweetData, ...twitterUser}} />
+    </div>
 }

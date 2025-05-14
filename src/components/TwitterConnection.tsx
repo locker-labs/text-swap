@@ -27,8 +27,8 @@ export default function TwitterConnection({
         setTwitterUser(user);
 
         // Generate tweet text with a sample token address
-        const tokenAddress = "0x1234567890abcdef1234567890abcdef12345678";
-        setTweetText(`@locker_money buy token: ${tokenAddress} amount: 100`);
+        const tokenAddress = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
+        setTweetText(`@locker_money buy token: ${tokenAddress} amount: 0.001`);
       }
     }
 
@@ -47,8 +47,8 @@ export default function TwitterConnection({
       setTwitterUser(user);
 
       // Generate tweet text with a sample token address
-      const tokenAddress = "0x1234567890abcdef1234567890abcdef12345678";
-      setTweetText(`@locker_money buy token: ${tokenAddress} amount: 100`);
+      const tokenAddress = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
+      setTweetText(`@locker_money buy token: ${tokenAddress} amount: 0.001`);
     }
   }, []);
 
@@ -104,7 +104,7 @@ export default function TwitterConnection({
             <Twitter className="h-5 w-5" />
           </a>
         </div>
-        {startPolling && <FetchTweetData userId="1796891124319109120" />}
+        {/* {startPolling && <FetchTweetData userId="1796891124319109120" />} */}
       </div>
     );
   }

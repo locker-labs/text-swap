@@ -5,4 +5,4 @@ export const config = {
   ethScanerUrl: "https://sepolia.etherscan.io",
 };
 
-export const sessionAccountAddress = '0x3620DD4dFa2207D85C88286F2655e0f6E12EDb27';
+export const sessionAccountAddress = '0x8582186e2A9c3797DaE0636FFd53C83f09ab669F';

@@ -14,7 +14,7 @@ import { usePermissions } from "./PermissionProvider";
 import { config } from "@/config";
 
 const sepoliaChainId = config.chain.id;
-const hybridDeleGatorImpl = '0xe871c23756d3b977Ef705698B238431e2D5F1B2A';
+const hybridDeleGatorImpl = '0xF2846032bD52dd42FFfe639eCcd9B50777BDCc9D'
 
 export const SessionAccountContext = createContext({
   sessionAccount: null as MetaMaskSmartAccount<Implementation> | null,

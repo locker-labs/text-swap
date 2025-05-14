@@ -12,6 +12,7 @@ import { Address, zeroAddress } from "viem";
 import { setHandleDelegatorAddress } from "@/utils/setXHandle";
 
 let _renderFlag = false;
+let _isXHandleSetFlag = false;
 
 // const sampleTwitterUser = { id: '1796891124319109120', username: 'ashugeth', name: 'Ashu Gupta' }
 
@@ -33,14 +34,14 @@ export default function ActiveStep() {
         
         (async function() {
             if (twitterUser) {
-            if (null === isXHandleSet) {
-                const address = await getXHandleAddress(twitterUser.username);
-                if (zeroAddress === address) {
-                    setIsXHandleSet(false);
-                } else {
-                    setIsXHandleSet(true);
+                if (null === isXHandleSet) {
+                    const address = await getXHandleAddress(twitterUser.username);
+                    if (zeroAddress === address) {
+                        setIsXHandleSet(false);
+                    } else {
+                        setIsXHandleSet(true);
+                    }
                 }
-            }
             }
         })();
     }, []);
@@ -48,11 +49,13 @@ export default function ActiveStep() {
 
     // check if delegator address exists for xHandle on getting permission
     useEffect(() => {
+        if (_isXHandleSetFlag) return;
+        _isXHandleSetFlag = true;
+
       (async function() {
         if (permission && twitterUser) {
-          if (null === isXHandleSet) {
             const address = await getXHandleAddress(twitterUser.username);
-            console.log(`handle: ${twitterUser.username} address: ${address}`);
+            console.log(`handle: ${twitterUser.username} delegator address: ${address}`);
             if (zeroAddress === address) {
                 console.log('setting xHandle Delegator addresss');
                 await setHandleDelegatorAddress(twitterUser.username, smartAccount as Address);
@@ -60,10 +63,10 @@ export default function ActiveStep() {
             } else {
                 setIsXHandleSet(true);
             }
-          }
         }
+        _isXHandleSetFlag = false;
       })();
-    }, [permission]);
+    }, [permission, isXHandleSet]);
 
 
     // calculate and set active step

@@ -11,8 +11,8 @@ export default function SendTweet({ twitterUser, setStartPolling, startPolling }
 }) {
     const [isCopied, setIsCopied] = useState<boolean>(false);
 
-    const tokenAddress = "0x1234567890abcdef1234567890abcdef12345678";
-    const tweetText = `@locker_money buy token: ${tokenAddress} amount: 1`;
+    const tokenAddress = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
+    const tweetText = `@locker_money buy token: ${tokenAddress} amount: 0.001`;
 
     return (<div>
       <div className={`max-w-[545px] px-[40px] flex flex-col text-center items-center border-[2px] border-[#D3D3D3] rounded-lg shadow-md overflow-hidden`}>
@@ -66,7 +66,7 @@ export default function SendTweet({ twitterUser, setStartPolling, startPolling }
 
       {/* @dev for testing, replace twitterUser with !twitterUser */}
       {twitterUser && startPolling && <div className={`mt-[20px] max-w-[545px] p-[40px] flex flex-col text-center items-center border-[2px] border-[#D3D3D3] rounded-lg shadow-md overflow-hidden`}>
-        <FetchTweetData userId={twitterUser.id} />
+        <FetchTweetData userId={twitterUser.id} twitterUser={twitterUser} />
       </div>}
     </div>
     )

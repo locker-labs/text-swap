@@ -9,7 +9,7 @@ import { Loader2, CheckCircle } from "lucide-react";
 import { useSessionAccount } from "@/providers/SessionAccountProvider";
 import { sessionAccountAddress } from "@/config";
 
-export default function GrantPermissionsButton() {
+export default function GrantPermissionsButton({disabled = false}: {disabled?: boolean}) {
   const { savePermission } = usePermissions();
   const { sessionAccount, createSessionAccount } = useSessionAccount();
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -59,10 +59,10 @@ export default function GrantPermissionsButton() {
           permission: {
             type: "native-token-stream",
             data: {
-              initialAmount: 100n, // 1 WEI
-              amountPerSecond: 100n, // 100 WEI per second
+              initialAmount: BigInt(1e15), // 0.001 ETH
+              amountPerSecond: BigInt(1e15), // 0.001 ETH per second
               startTime: currentTime,
-              maxAmount: parseEther("0.001"), // 0.001 ETH
+              maxAmount: parseEther("0.1"), // 0.1 ETH
               justification:
                 "Buy tokens on your behalf when you send verified messages from Twitter.",
             },
@@ -82,7 +82,7 @@ export default function GrantPermissionsButton() {
     <button
       className="w-full cursor-pointer mt-[18px] mb-[25px] bg-[#4F46E5] hover:bg-blue-700 cursor-pointer text-white font-bold font-[Roboto] p-[14px] text-[16px] rounded-lg transition-colors duration-200 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
       onClick={handleGrantPermissions}
-      disabled={isLoading}
+      disabled={isLoading || disabled}
     >
       <span>
         {isLoading ? "Granting Permissions..." : "Grant Permissions"}

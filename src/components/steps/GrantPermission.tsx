@@ -37,8 +37,7 @@ export default function GrantPermission({
           By granting permission, you confirm that you understand the dapp will only use your tokens after you post a tweet matching the required format
         </p>
 
-        <GrantPermissionsButton />
-
+        <GrantPermissionsButton disabled={!!permission && !!twitterUser && !isXHandleSet} />
 
         {permission && twitterUser && !isXHandleSet && <div className="w-full mb-[25px] mx-[20px] p-[20px] border border-[#D6EAFD] bg-[#D6EAFD] rounded-lg text-left flex items-center justify-start gap-[8px]">
           <Loader2 className="h-5 w-5 animate-spin" color="#1E90FF" />

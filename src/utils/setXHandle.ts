@@ -12,7 +12,7 @@ dotenv.config();
 
 // Resolves the DeleGatorEnvironment for Linea Sepolia
 const sepoliaChainId = 11155111;
-const hybridDeleGatorImpl = '0xe871c23756d3b977Ef705698B238431e2D5F1B2A'
+const hybridDeleGatorImpl = '0xF2846032bD52dd42FFfe639eCcd9B50777BDCc9D'
 const deploySalt = "0x";
 const privateKey = process.env.NEXT_PUBLIC_PRIVATE_KEY;
 
@@ -89,7 +89,8 @@ export async function setHandleDelegatorAddress(username: string, delegatorAddre
     });
 
     console.log("User Operation Hash:", userOperationHash);
-    
+    console.log('Waiting for user operation receipt...');
+
     const { receipt } = await bundlerClient.waitForUserOperationReceipt({
         hash: userOperationHash,
     });

@@ -2,11 +2,6 @@ import moment from 'moment';
 import { Address } from 'viem';
 const botName = 'locker_money';
 const PollingInterval = process.env.NEXT_PUBLIC_POLL_INTERVAL_MS ? parseInt(process.env.NEXT_PUBLIC_POLL_INTERVAL_MS)/1000 : 3;
-const SocialDataApiKey = process.env.NEXT_PUBLIC_SOCIALDATA_API_KEY;
-
-if (!SocialDataApiKey) {
-    throw new Error('NEXT_PUBLIC_SOCIALDATA_API_KEY is not set');
-}
 
 export async function pollTwitter(userId: string) {
     // @dev for testing
@@ -20,20 +15,13 @@ export async function pollTwitter(userId: string) {
     let tweetObj = null;
 
     try {
-        const rawResponse = await fetch(`https://api.socialdata.tools/twitter/user/${userId}/tweets-and-replies`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${SocialDataApiKey}`,
-                'Accept': 'application/json'
-            }
-        });
-        const response = await rawResponse.json();
-
+        const res = await fetch(`/api/socialdata/${userId}/tweets`); // Replace with dynamic userId
+        const response = await res.json();
         console.log('response.tweets', response.tweets);
 
         localStorage.setItem('latestTweets', JSON.stringify(response.tweets));
 
-        const now = moment().subtract(1 + PollingInterval, 'seconds');
+        const now = moment().subtract(3 + PollingInterval, 'seconds').utc();
 
         // processing tweets
         for (const tweet of response.tweets) {
@@ -60,6 +48,8 @@ export async function pollTwitter(userId: string) {
     // parse tweet id and content
     const tweetId = tweetObj.id_str;
     const tweetText = tweetObj.full_text;
+    const tweetLink = `https://twitter.com/${tweetObj.user.screen_name}/status/${tweetId}`;
+    console.log('Tweet link:', tweetLink);
     console.log('Tweet ID:', tweetId);
     console.log('Tweet content:', tweetText);
 
@@ -78,5 +68,5 @@ export async function pollTwitter(userId: string) {
     console.log('Token amount:', tokenAmount);
     console.log('Token address:', tokenAddress);
 
-    return { tokenAmount, tokenAddress, tweetId };
+    return { tokenAmount, tokenAddress, tweetId, tweetLink };
 }
