@@ -18,8 +18,8 @@ const geistMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Gator ERC7715",
-  description: "A dApp to test the Gator ERC7715 implementation",
+  title: "Text Swap",
+  description: "Secure swaps from tweets, posts, and more.",
 };
 
 export default function RootLayout({
@@ -30,8 +30,8 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <head>
-        <title>Locker - Text Swap</title>
-        <meta name="description" content="Locker Text Swap" />
+        <title>Text Swap</title>
+        <meta name="description" content="Text Swap" />
         <meta name="apple-mobile-web-app-title" content="Text Swap" />
       </head>
       <body
