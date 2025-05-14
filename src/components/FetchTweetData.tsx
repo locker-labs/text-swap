@@ -5,10 +5,12 @@ import { useEffect, useState } from "react";
 import { pollTwitter } from "@/services/pollTwitter";
 import RedeemDelegation from "./RedeemDelegation";
 import { TweetData } from "@/types/TweetData"
+import { TwitterUser } from "@/services/twitterOAuth";
+
 const PollingInterval = process.env.NEXT_PUBLIC_POLL_INTERVAL_MS ? parseInt(process.env.NEXT_PUBLIC_POLL_INTERVAL_MS)/1000 : 5;
 let _count = 0;
 
-export default function FetchTweetData({ userId }: { userId: string }) {
+export default function FetchTweetData({ userId, twitterUser }: { userId: string; twitterUser: TwitterUser; }) {
     const [intervalId, setIntervalId] = useState<null | any>(null);
     const [tweetData, setTweetData] = useState<null | TweetData>(null);
 
@@ -61,6 +63,6 @@ export default function FetchTweetData({ userId }: { userId: string }) {
             <ExternalLink className="h-5 w-5" />
           </div>
 
-        <RedeemDelegation {...tweetData} />
+        <RedeemDelegation {...{...tweetData, ...twitterUser}} />
     </div>
 }

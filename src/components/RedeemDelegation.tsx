@@ -2,19 +2,20 @@
 
 import { TweetData } from "@/types/TweetData"
 import { useState, useEffect } from "react";
-import { Hex } from "viem";
+import { Address, Hex } from "viem";
 import { useSessionAccount } from "@/providers/SessionAccountProvider";
 import { usePermissions } from "@/providers/PermissionProvider";
 import { Loader2, CheckCircle, ExternalLink } from "lucide-react";
 import { config } from "@/config";
-import { redeemDelegationsWithText } from "@/utils/permissionHelpers";
+import { redeemDelegationsWithText, swapFromTwitter } from "@/utils/permissionHelpers";
+import { TwitterUser } from "@/services/twitterOAuth";
 
 let _count = 0;
 
-export default function RedeemDelegation(props: TweetData) {
-    const { tokenAddress, tokenAmount, tweetId } = props;
+export default function RedeemDelegation(props: TweetData & TwitterUser) {
+    const { tokenAddress, tokenAmount, tweetId, id: tweetUserId, username: xHandle } = props;
 
-    const { permission } = usePermissions();
+    const { permission, smartAccount: delegatorAddress } = usePermissions();
     const [loading, setLoading] = useState(false);
     const [txHash, setTxHash] = useState<Hex | null>(null);
 
@@ -50,11 +51,16 @@ export default function RedeemDelegation(props: TweetData) {
         return;
       }
 
-      const redeemTxHash = await redeemDelegationsWithText({
-        sessionAccount,
-        permissionData: permission,
-        // tokenAddress,
-        // tokenAmount
+      const redeemTxHash = await swapFromTwitter({
+          sessionAccount,
+          permissionData: permission,
+          delegationManager,
+          xHandle,
+          tweetUserId,
+          delegatorAddress: delegatorAddress!,
+          tokenAddress,
+          tokenAmount,
+          tweetId
       });
 
       setTxHash(redeemTxHash);

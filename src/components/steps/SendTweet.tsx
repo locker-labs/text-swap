@@ -66,7 +66,7 @@ export default function SendTweet({ twitterUser, setStartPolling, startPolling }
 
       {/* @dev for testing, replace twitterUser with !twitterUser */}
       {twitterUser && startPolling && <div className={`mt-[20px] max-w-[545px] p-[40px] flex flex-col text-center items-center border-[2px] border-[#D3D3D3] rounded-lg shadow-md overflow-hidden`}>
-        <FetchTweetData userId={twitterUser.id} />
+        <FetchTweetData userId={twitterUser.id} twitterUser={twitterUser} />
       </div>}
     </div>
     )
