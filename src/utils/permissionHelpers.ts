@@ -31,7 +31,6 @@ export const swapFromTwitter = async ({
 } : {
   sessionAccount: MetaMaskSmartAccount,
   permissionData: any,
-  delegationManager: Hex,
   xHandle: string,
   tweetUserId: string,
   delegatorAddress: Address,
@@ -415,8 +414,6 @@ export const redeemTransaction = async ({
   delegationManager: Hex,
   context: Hex,
   accountMeta: any,
-  tokenAddress: Hex,
-  tokenAmount: number,
 }) => {
     const { fast: fee } = await pimlicoClient.getUserOperationGasPrice();
     const nonce = await sessionAccount.getNonce();

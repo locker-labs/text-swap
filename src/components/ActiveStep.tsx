@@ -14,7 +14,7 @@ import { setHandleDelegatorAddress } from "@/utils/setXHandle";
 let _renderFlag = false;
 let _isXHandleSetFlag = false;
 
-// const sampleTwitterUser = { id: '1796891124319109120', username: 'ashugeth', name: 'Ashu Gupta' }
+// const sampleTwitterUser = { id: '914163063346958337', username: 'thisisashugupta', name: 'Ashu Gupta' }
 
 export default function ActiveStep() {
     const [isXHandleSet, setIsXHandleSet] = useState<boolean | null>(null);

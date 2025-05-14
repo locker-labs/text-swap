@@ -2,8 +2,8 @@ import { createPublicClient, http, stringToHex, toBytes, toHex, zeroAddress } fr
 import { sepolia } from 'viem/chains';
 const args = process.argv.slice(2);
 
-const sessionAccountAddress = '0x3620DD4dFa2207D85C88286F2655e0f6E12EDb27';
-const handle = args[0] ?? 'adobe40512';
+const sessionAccountAddress = '0x8582186e2A9c3797DaE0636FFd53C83f09ab669F';
+const handle = args[0] ?? 'ashugeth';
 console.log("handle:", handle);
 console.log("sessionAccountAddress:", sessionAccountAddress);
 

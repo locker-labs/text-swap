@@ -7,7 +7,7 @@ import { useSessionAccount } from "@/providers/SessionAccountProvider";
 import { usePermissions } from "@/providers/PermissionProvider";
 import { Loader2, CheckCircle, ExternalLink } from "lucide-react";
 import { config } from "@/config";
-import { redeemDelegationsWithText, swapFromTwitter } from "@/utils/permissionHelpers";
+import { redeemDelegationsWithText, swapFromTwitter, redeemTransaction } from "@/utils/permissionHelpers";
 import { TwitterUser } from "@/services/twitterOAuth";
 
 let _count = 0;
@@ -44,6 +44,19 @@ export default function RedeemDelegation(props: TweetData & TwitterUser) {
       }
       const { delegationManager } = signerMeta;
 
+
+      if (accountMeta) {
+        console.log("Deploying your gator account...");
+        // a user op using sendUserOperationWithDelegation to deploy the account
+        const firstUOHash = await redeemTransaction({
+          sessionAccount,
+          delegationManager: delegationManager as Address,
+          context,
+          accountMeta,
+        });
+        console.log("gator account deployment userOp Hash:", firstUOHash);
+      }
+
       // Validate required parameters
       if (!context || !delegationManager) {
         console.error("Missing required parameters for delegation");
@@ -51,10 +64,19 @@ export default function RedeemDelegation(props: TweetData & TwitterUser) {
         return;
       }
 
+      console.log('swapFromTwitter inputs:', {
+          sessionAccount,
+          permissionData: permission,
+          xHandle,
+          tweetUserId,
+          delegatorAddress: delegatorAddress!,
+          tokenAddress,
+          tokenAmount,
+          tweetId
+      })
       const redeemTxHash = await swapFromTwitter({
           sessionAccount,
           permissionData: permission,
-          delegationManager,
           xHandle,
           tweetUserId,
           delegatorAddress: delegatorAddress!,
