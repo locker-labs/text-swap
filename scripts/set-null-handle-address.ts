@@ -67,7 +67,6 @@ const smartAccountCustom = await toMetaMaskSmartAccount({
 });
 
 console.log("smartAccountCustom:", smartAccountCustom.address);
-// 0x3620DD4dFa2207D85C88286F2655e0f6E12EDb27
 
 const rpcUrl = `https://public.pimlico.io/v2/${sepoliaChainId}/rpc?apikey=${process.env.PIMLICO_API_KEY}`;
 export const bundlerClient = createBundlerClient({
