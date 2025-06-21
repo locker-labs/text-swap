@@ -28,6 +28,6 @@ export default function StepIndicator({
         <div className={`mb-[6px] ${backgroundClass} mx-auto w-[40px] rounded-full aspect-square border-[2px] ${borderClass} flex items-center justify-center`}>
             <p className={`${textClass} text-[20px] font-medium font-[Roboto]`}>{centerElement}</p>
         </div>
-        <p className={`font-medium text-[14px] font-[Roboto] ${textClass}`}>{text}</p>
+        <p className={`font-medium text-[14px] font-[Roboto] text-center ${textClass}`}>{text}</p>
     </div>    
 }

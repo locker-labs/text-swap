@@ -7,14 +7,14 @@ export default function InstallMetamaskFlask() {
         <h3 className="text-[#773410] mt-[20px] text-[26px] text-xl font-bold mb-4 font-[Roboto]">
           Install MetaMask Flask
         </h3>
-        <p className="text-[#773410] mt-[12px] mb-[26px] text-[16px] font-medium font-[Roboto]">
-          This application requires MetaMask Flask to function. Follow the steps
+        <p className="px-4 text-[#773410] mt-[12px] mb-[26px] text-[16px] font-medium font-[Roboto]">
+          This application requires MetaMask Flask chrome extension to function. Follow the steps
           below to get started.
         </p>
         </div>
 
-        <div className="w-[calc(100%-40px)] m-[20px] py-[20px] px-[40px] border border-[#E1E1E1] rounded-lg text-left">
-          <p className="text-black text-[26px] text-xl font-bold mb-4 font-[Roboto]">Installation Steps:</p>
+        <div className="sm:w-[calc(100%-40px)] sm:m-[20px] py-[20px] px-[20px] sm:px-[40px] sm:border sm:border-[#E1E1E1] sm:rounded-lg text-left">
+          <p className="text-black text-[20px] md:text-[26px] text-xl font-bold mb-4 font-[Roboto]">Installation Steps:</p>
 
           <ol className="list-decimal list-inside space-y-4 text-gray-300">
             <li className="text-black font-[Roboto]">
