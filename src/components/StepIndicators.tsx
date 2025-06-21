@@ -23,7 +23,7 @@ export default function StepIndicators() {
         },
     ]
 
-    return <div className="mt-[72px] mb-[40px] w-full flex items-center justify-around">
+    return <div className="mt-[28px] sm:mt-[72px] mb-[28px] md:mb-[40px] w-full grid grid-cols-4 gap-4">
         {steps.map((s, i) => <StepIndicator key={i} step={s.step} text={s.text} activeStep={activeStep} />)}
     </div>
 }
